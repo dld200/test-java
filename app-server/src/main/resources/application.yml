@@ -15,12 +15,12 @@ spring:
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
-  type-aliases-package: org.example.server.domain
+  type-aliases-package: org.example.common.domain
   configuration:
     map-underscore-to-camel-case: true
 
 mapper:
-  mappers: org.example.common.org.example.server.config.BaseDao
+  mappers: org.example.server.config.BaseDao
   not-empty: false
   identity: MYSQL
 
