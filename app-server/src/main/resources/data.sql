@@ -7,9 +7,9 @@ DELETE FROM test_case;
 DELETE FROM device;
 
 -- 插入示例设备数据
-INSERT INTO device (name, model, uuid, status, create_time, update_time) VALUES 
-('iPhone 12', 'A1234', 'uuid-1234', 'available', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP()),
-('Samsung Galaxy S21', 'S21', 'uuid-5678', 'available', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+INSERT INTO device (name, type, uuid, status, create_time, update_time) VALUES 
+('iPhone 12', 'mobile', 'uuid-1234', 'available', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP()),
+('Samsung Galaxy S21', 'mobile', 'uuid-5678', 'available', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
 
 -- 插入示例测试用例数据
 INSERT INTO test_case (title, dsl, create_time, update_time) VALUES 
@@ -29,10 +29,10 @@ INSERT INTO test_record (test_case_id, test_case_name, status, start_time, end_t
 (2, 'Search Test', 'PASSED', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 3000, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
 
 -- 插入示例语句执行结果数据
-INSERT INTO statement (test_record_id, statement, status, duration, start_time, end_time, create_time, update_time) VALUES 
-(1, 'navigate(''https://example.com/login'')', 'PASSED', 1000, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP()),
-(1, 'input(''username'', ''testuser'')', 'PASSED', 500, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP()),
-(2, 'navigate(''https://example.com'')', 'PASSED', 800, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+INSERT INTO statement (test_record_id, statement, screenshot_id, status, duration, start_time, end_time, create_time, update_time) VALUES 
+(1, 'navigate(''https://example.com/login'')', NULL, 'PASSED', 1000, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP()),
+(1, 'input(''username'', ''testuser'')', NULL, 'PASSED', 500, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP()),
+(2, 'navigate(''https://example.com'')', NULL, 'PASSED', 800, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
 
 -- 插入示例截图数据
 INSERT INTO screenshot (file_path, file_name, description, create_time, update_time) VALUES 

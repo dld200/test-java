@@ -10,7 +10,7 @@ DROP TABLE IF EXISTS device;
 CREATE TABLE device (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255),
-    model VARCHAR(255),
+    type VARCHAR(255),
     uuid VARCHAR(255),
     status VARCHAR(50),
     create_time TIMESTAMP,
@@ -54,15 +54,14 @@ CREATE TABLE statement (
     update_time TIMESTAMP
 );
 
--- 创建screenshot_record表
+-- 创建screenshot表
 CREATE TABLE screenshot (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    test_result_id BIGINT,
     file_path VARCHAR(500),
     file_name VARCHAR(255),
-    timestamp TIMESTAMP,
     description VARCHAR(500),
-    statement_id BIGINT
+    create_time TIMESTAMP,
+    update_time TIMESTAMP
 );
 
 -- 创建transaction表

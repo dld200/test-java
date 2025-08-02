@@ -48,6 +48,7 @@ public class DefaultInterceptor implements Interceptor {
     }
 
     private void sleep(Context context, String delayKey) {
+        log.info("Sleep {}", context.getOption(delayKey));
         Object delayObj = context.getOption(delayKey);
         long delay = 1000; // 默认延迟1秒
         if (delayObj != null) {
@@ -65,7 +66,7 @@ public class DefaultInterceptor implements Interceptor {
     }
 
     private void screenshot(Context context, String name) {
-        log.info("Taking screenshot: {}", name);
+        log.info("Screenshot: {}", name);
         // 这里应该是实际的截图实现
         // 例如调用截图工具或WebDriver的截图功能
     }
