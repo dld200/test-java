@@ -1,4 +1,4 @@
-package org.example.mobile.test;
+package org.example.mobile.app;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -188,6 +188,41 @@ public class AppGraphTest {
         // 1. login_page -> home_page
         // 2. home_page -> profile_page
         assertTrue(paths.size() >= 2);
+    }
+    
+    @Test
+    public void testFindAllPathsWithElements() {
+        // 添加页面
+        appGraph.addPage("login_page", "登录页面", "stack");
+        appGraph.addPage("home_page", "主页", "stack");
+        appGraph.addPage("profile_page", "个人资料页面", "stack");
+        
+        // 通过添加元素建立页面间的关系
+        appGraph.addElementToPage("login_page", new Element("login_btn", "button", "登录", "login_btn", 100, 200, 80, 40, "home_page"));
+        appGraph.addElementToPage("home_page", new Element("profile_btn", "button", "个人资料", "profile_btn", 250, 10, 80, 30, "profile_page"));
+        
+        // 测试查找所有路径（包含元素信息）
+        List<List<String>> paths = appGraph.findAllPathsWithElements();
+        assertNotNull(paths);
+        // 应该至少包含以下路径:
+        // 1. login_page(login_btn) -> home_page
+        // 2. login_page(login_btn) -> home_page(profile_btn) -> profile_page
+        assertTrue(paths.size() >= 2);
+        
+        // 验证路径包含元素信息
+        boolean foundLoginToHome = false;
+        boolean foundFullChain = false;
+        for (List<String> path : paths) {
+            String pathStr = String.join(" -> ", path);
+            if (pathStr.contains("login_page(login_btn)") && pathStr.contains("home_page")) {
+                foundLoginToHome = true;
+            }
+            if (pathStr.contains("login_page(login_btn)") && pathStr.contains("home_page(profile_btn)") && pathStr.contains("profile_page")) {
+                foundFullChain = true;
+            }
+        }
+        assertTrue(foundLoginToHome, "应该找到从登录页面到主页的路径");
+        assertTrue(foundFullChain, "应该找到完整的路径链");
     }
     
     @Test

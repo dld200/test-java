@@ -1,4 +1,4 @@
-package org.example.mobile.test;
+package org.example.mobile.app;
 
 import java.util.List;
 
@@ -40,6 +40,11 @@ public class AppGraphExample {
         System.out.println("\n=== 整个APP中的所有路径 ===");
         List<List<String>> allPaths = appGraph.findAllPaths();
         printPaths(allPaths);
+        
+        // 查找整个图中的所有路径（包含元素信息）
+        System.out.println("\n=== 整个APP中的所有路径（包含元素信息） ===");
+        List<List<String>> allPathsWithElements = appGraph.findAllPathsWithElements();
+        printPathsWithElements(allPathsWithElements);
         
         // 查找特定路径
         System.out.println("\n=== 从登录页面到个人资料页面的路径 ===");
@@ -141,6 +146,24 @@ public class AppGraphExample {
      * @param paths 路径列表
      */
     private static void printPaths(List<List<String>> paths) {
+        if (paths.isEmpty()) {
+            System.out.println("没有找到路径");
+            return;
+        }
+        
+        for (int i = 0; i < paths.size(); i++) {
+            List<String> path = paths.get(i);
+            System.out.println((i + 1) + ". " + String.join(" -> ", path));
+        }
+        
+        System.out.println("总共找到 " + paths.size() + " 条路径");
+    }
+    
+    /**
+     * 打印包含元素信息的路径列表
+     * @param paths 路径列表
+     */
+    private static void printPathsWithElements(List<List<String>> paths) {
         if (paths.isEmpty()) {
             System.out.println("没有找到路径");
             return;

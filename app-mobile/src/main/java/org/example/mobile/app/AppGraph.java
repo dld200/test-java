@@ -1,4 +1,4 @@
-package org.example.mobile.test;
+package org.example.mobile.app;
 
 import java.util.*;
 
@@ -66,6 +66,36 @@ public class AppGraph {
         
         public String getElementId() {
             return elementId;
+        }
+    }
+    
+    /**
+     * 表示包含元素信息的路径节点
+     */
+    private static class PathWithElements {
+        private final String pageId;
+        private final String elementName;
+        
+        public PathWithElements(String pageId, String elementName) {
+            this.pageId = pageId;
+            this.elementName = elementName;
+        }
+        
+        public String getPageId() {
+            return pageId;
+        }
+        
+        public String getElementName() {
+            return elementName;
+        }
+        
+        @Override
+        public String toString() {
+            if (elementName != null && !elementName.isEmpty()) {
+                return pageId + "(" + elementName + ")";
+            } else {
+                return pageId;
+            }
         }
     }
     
@@ -292,6 +322,11 @@ public class AppGraph {
         return allPaths;
     }
     
+    // 遍历所有节点，给出从指定起始节点出发的所有路径（包含元素信息）
+    public List<List<String>> findAllPathsWithElementsFrom(String start) {
+        return findAllPathsWithElements(start);
+    }
+    
     // DFS遍历所有路径的辅助方法
     private void dfsAllPaths(String node, Set<String> visited, List<String> currentPath, List<List<String>> allPaths) {
         visited.add(node);
@@ -322,6 +357,19 @@ public class AppGraph {
         // 对每个节点作为起始点进行遍历
         for (String node : nodes.keySet()) {
             List<List<String>> pathsFromNode = findAllPathsFrom(node);
+            allPaths.addAll(pathsFromNode);
+        }
+        
+        return allPaths;
+    }
+    
+    // 遍历所有节点，给出图中所有可能的路径（包含元素信息）
+    public List<List<String>> findAllPathsWithElements() {
+        List<List<String>> allPaths = new ArrayList<>();
+        
+        // 对每个节点作为起始点进行遍历
+        for (String node : nodes.keySet()) {
+            List<List<String>> pathsFromNode = findAllPathsWithElementsFrom(node);
             allPaths.addAll(pathsFromNode);
         }
         
@@ -421,5 +469,81 @@ public class AppGraph {
         }
         sb.append("]}");
         return sb.toString();
+    }
+    
+    // 遍历所有节点，给出从指定起始节点出发的所有路径（包含元素信息）
+    public List<List<String>> findAllPathsWithElements(String start) {
+        List<List<String>> allPaths = new ArrayList<>();
+        Set<String> visited = new HashSet<>();
+        List<String> currentPath = new ArrayList<>();
+        
+        dfsAllPathsWithElements(start, visited, currentPath, allPaths);
+        
+        return allPaths;
+    }
+    
+    // DFS遍历所有路径的辅助方法（包含元素信息）
+    private void dfsAllPathsWithElements(String node, Set<String> visited, List<String> currentPath, List<List<String>> allPaths) {
+        visited.add(node);
+        
+        // 添加当前节点到路径
+        currentPath.add(node);
+        
+        // 添加当前路径到结果中（如果路径长度大于1，即包含起始节点和至少一个节点）
+        if (currentPath.size() > 1) {
+            // 创建带元素信息的路径表示
+            List<String> pathWithElements = new ArrayList<>();
+            for (int i = 0; i < currentPath.size(); i++) {
+                if (i == currentPath.size() - 1) {
+                    // 最后一个节点，只显示页面名
+                    pathWithElements.add(currentPath.get(i));
+                } else {
+                    // 中间节点，需要查找连接到下一个节点的元素
+                    String currentNode = currentPath.get(i);
+                    String nextNode = currentPath.get(i + 1);
+                    
+                    // 查找连接当前节点和下一个节点的元素
+                    String elementName = findElementName(currentNode, nextNode);
+                    if (elementName != null) {
+                        pathWithElements.add(currentNode + "(" + elementName + ")");
+                    } else {
+                        pathWithElements.add(currentNode);
+                    }
+                }
+            }
+            allPaths.add(pathWithElements);
+        }
+        
+        // 递归遍历所有邻居节点
+        for (Edge edge : adjacencyList.getOrDefault(node, new ArrayList<>())) {
+            String neighbor = edge.getTargetPageId();
+            if (!visited.contains(neighbor)) {
+                dfsAllPathsWithElements(neighbor, visited, currentPath, allPaths);
+            }
+        }
+        
+        // 回溯
+        visited.remove(node);
+        currentPath.remove(currentPath.size() - 1);
+    }
+    
+    // 查找连接两个节点的元素名称
+    private String findElementName(String fromNode, String toNode) {
+        List<Edge> edges = adjacencyList.getOrDefault(fromNode, new ArrayList<>());
+        for (Edge edge : edges) {
+            if (edge.getTargetPageId().equals(toNode)) {
+                return edge.getElementName();
+            }
+        }
+        return null;
+    }
+    
+    // 获取节点名称的辅助方法
+    private String getNodeName(String pageId) {
+        PageNode pageNode = nodes.get(pageId);
+        if (pageNode != null && pageNode.getName() != null) {
+            return pageNode.getName();
+        }
+        return pageId;
     }
 }

@@ -28,6 +28,53 @@ class PageNode {
     }
     
     /**
+     * 从JSON字符串解析生成PageNode对象
+     * @param json JSON字符串
+     */
+    PageNode(String json) {
+        this.params = new HashMap<>();
+        this.elements = new ArrayList<>();
+        
+        // 简单解析JSON字符串
+        parseJson(json);
+    }
+    
+    /**
+     * 解析JSON字符串并填充PageNode属性
+     * @param json JSON字符串
+     */
+    private void parseJson(String json) {
+        // 移除首尾的大括号
+        String content = json.trim();
+        if (content.startsWith("{") && content.endsWith("}")) {
+            content = content.substring(1, content.length() - 1);
+        }
+        
+        // 分割键值对
+        String[] pairs = content.split(",");
+        for (String pair : pairs) {
+            String[] keyValue = pair.split(":");
+            if (keyValue.length == 2) {
+                String key = keyValue[0].trim().replaceAll("\"", "");
+                String value = keyValue[1].trim().replaceAll("\"", "");
+                
+                switch (key) {
+                    case "id":
+                        this.id = value;
+                        break;
+                    case "name":
+                        this.name = value;
+                        break;
+                    case "type":
+                        this.type = value;
+                        break;
+                    // 其他字段可以按需处理
+                }
+            }
+        }
+    }
+    
+    /**
      * 添加元素到页面
      * @param element 要添加的元素
      */
