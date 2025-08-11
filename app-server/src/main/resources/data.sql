@@ -1,45 +1,45 @@
--- 清空表数据
-DELETE FROM transaction;
-DELETE FROM screenshot;
-DELETE FROM statement;
-DELETE FROM test_record;
-DELETE FROM test_case;
-DELETE FROM device;
+-- 插入示例device数据
+INSERT INTO device (name, type, uuid, status) VALUES
+('iPhone 12', 'iOS', 'iPhone12-001', 'available'),
+('Samsung Galaxy S21', 'Android', 'GalaxyS21-001', 'available'),
+('iPad Pro', 'iOS', 'iPadPro-001', 'maintenance');
 
--- 插入示例设备数据
-INSERT INTO device (name, type, uuid, status, create_time, update_time) VALUES 
-('iPhone 12', 'mobile', 'uuid-1234', 'available', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP()),
-('Samsung Galaxy S21', 'mobile', 'uuid-5678', 'available', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+-- 插入示例app数据
+INSERT INTO app (name, package_name, version, description) VALUES
+('Twitter', 'com.twitter.android', '8.8.0', 'Twitter for Android'),
+('WeChat', 'com.tencent.mm', '8.0.20', 'WeChat - Instant messaging app'),
+('TikTok', 'com.zhiliaoapp.musically', '19.9.4', 'TikTok - Short video app');
 
--- 插入示例测试用例数据
-INSERT INTO test_case (title, dsl, create_time, update_time) VALUES 
-('Login Test', '# Login test scenario
-navigate(''https://example.com/login'')
-input(''username'', ''testuser'')
-input(''password'', ''password123'')
-click(''loginButton'')', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP()),
-('Search Test', '# Search test scenario
-navigate(''https://example.com'')
-input(''searchBox'', ''test query'')
-click(''searchButton'')', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+-- 插入示例transaction数据
+INSERT INTO transaction (device_id, app_id, type, status, start_time, end_time) VALUES
+(1, 1, 'test', 'completed', '2023-01-01 10:00:00', '2023-01-01 10:05:00'),
+(2, 2, 'test', 'completed', '2023-01-01 11:00:00', '2023-01-01 11:10:00'),
+(1, 3, 'test', 'failed', '2023-01-01 12:00:00', '2023-01-01 12:03:00');
 
--- 插入示例测试记录数据
-INSERT INTO test_record (test_case_id, test_case_name, status, start_time, end_time, duration, create_time, update_time) VALUES 
-(1, 'Login Test', 'PASSED', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 5000, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP()),
-(2, 'Search Test', 'PASSED', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 3000, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+-- 插入示例statement数据
+INSERT INTO statement (transaction_id, type, content) VALUES
+(1, 'click', 'Click on login button'),
+(1, 'input', 'Input username'),
+(2, 'click', 'Click on send message button'),
+(2, 'input', 'Input message content'),
+(3, 'swipe', 'Swipe up on feed');
 
--- 插入示例语句执行结果数据
-INSERT INTO statement (test_record_id, statement, screenshot_id, status, duration, start_time, end_time, create_time, update_time) VALUES 
-(1, 'navigate(''https://example.com/login'')', NULL, 'PASSED', 1000, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP()),
-(1, 'input(''username'', ''testuser'')', NULL, 'PASSED', 500, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP()),
-(2, 'navigate(''https://example.com'')', NULL, 'PASSED', 800, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+-- 插入示例screenshot数据
+INSERT INTO screenshot (statement_id, file_path) VALUES
+(1, '/screenshots/1.png'),
+(2, '/screenshots/2.png'),
+(3, '/screenshots/3.png'),
+(4, '/screenshots/4.png'),
+(5, '/screenshots/5.png');
 
--- 插入示例截图数据
-INSERT INTO screenshot (file_path, file_name, description, create_time, update_time) VALUES 
-('/screenshots/login_page.png', 'login_page.png', 'Login page screenshot', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP()),
-('/screenshots/dashboard.png', 'dashboard.png', 'Dashboard screenshot', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+-- 插入示例test_case数据
+INSERT INTO test_case (app_id, name, description) VALUES
+(1, 'Login Test', 'Test the login functionality'),
+(2, 'Send Message Test', 'Test sending a message'),
+(3, 'Video Playback Test', 'Test video playback functionality');
 
--- 插入示例网络事务数据
-INSERT INTO transaction (url, method, headers, content_type, request, response, duration, create_time, update_time) VALUES 
-('https://api.example.com/login', 'POST', 'Content-Type: application/json', 'application/json', '{"username":"testuser","password":"password123"}', '{"token":"abc123","expiresIn":3600}', 1200, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP()),
-('https://api.example.com/user', 'GET', 'Authorization: Bearer abc123', 'application/json', '', '{"id":1,"name":"testuser"}', 800, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+-- 插入示例test_result数据
+INSERT INTO test_result (test_case_id, device_id, status, start_time, end_time, log) VALUES
+(1, 1, 'passed', '2023-01-01 10:00:00', '2023-01-01 10:05:00', 'Login successful'),
+(2, 2, 'passed', '2023-01-01 11:00:00', '2023-01-01 11:10:00', 'Message sent successfully'),
+(3, 1, 'failed', '2023-01-01 12:00:00', '2023-01-01 12:03:00', 'Video playback failed due to network error');

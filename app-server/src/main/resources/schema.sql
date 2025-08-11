@@ -1,79 +1,77 @@
-e的r-- 删除已存在的表（如果存在）
-DROP TABLE IF EXISTS transaction;
-DROP TABLE IF EXISTS screenshot;
-DROP TABLE IF EXISTS statement;
-DROP TABLE IF EXISTS test_record;
-DROP TABLE IF EXISTS test_case;
-DROP TABLE IF EXISTS device;
-
 -- 创建device表
-CREATE TABLE device (
+CREATE TABLE IF NOT EXISTS device (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255),
-    type VARCHAR(255),
-    uuid VARCHAR(255),
-    status VARCHAR(50),
-    create_time TIMESTAMP,
-    update_time TIMESTAMP
+    name VARCHAR(255) NOT NULL,
+    type VARCHAR(50) NOT NULL,
+    uuid VARCHAR(255) UNIQUE NOT NULL,
+    status VARCHAR(50) NOT NULL,
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- 创建test_case表
-CREATE TABLE test_case (
+-- 创建app表
+CREATE TABLE IF NOT EXISTS app (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(255),
-    dsl TEXT,
-    create_time TIMESTAMP,
-    update_time TIMESTAMP
-);
-
--- 创建test_record表
-CREATE TABLE test_record (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    test_case_id BIGINT,
-    test_case_name VARCHAR(255),
-    status VARCHAR(50), -- PASSED, FAILED, RUNNING, PENDING
-    start_time TIMESTAMP,
-    end_time TIMESTAMP,
-    duration BIGINT,
-    error_message TEXT,
-    create_time TIMESTAMP,
-    update_time TIMESTAMP
-);
-
--- 创建statement表
-CREATE TABLE statement (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    test_record_id BIGINT,
-    statement TEXT,
-    screenshot_id BIGINT,
-    status VARCHAR(50), -- PASSED, FAILED, SKIPPED
-    duration BIGINT,
-    start_time TIMESTAMP,
-    end_time TIMESTAMP,
-    create_time TIMESTAMP,
-    update_time TIMESTAMP
-);
-
--- 创建screenshot表
-CREATE TABLE screenshot (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    file_path VARCHAR(500),
-    file_name VARCHAR(255),
-    description VARCHAR(500),
-    create_time TIMESTAMP,
-    update_time TIMESTAMP
+    name VARCHAR(255) NOT NULL,
+    package_name VARCHAR(255) UNIQUE NOT NULL,
+    version VARCHAR(50),
+    description TEXT,
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 -- 创建transaction表
-CREATE TABLE transaction (
+CREATE TABLE IF NOT EXISTS transaction (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    url VARCHAR(500),
-    method VARCHAR(10),
-    headers TEXT,
-    content_type VARCHAR(100),
-    request TEXT,
-    response TEXT,
-    duration BIGINT,
-    create_time TIMESTAMP,
-    update_time TIMESTAMP
+    device_id BIGINT NOT NULL,
+    app_id BIGINT NOT NULL,
+    type VARCHAR(50) NOT NULL,
+    status VARCHAR(50) NOT NULL,
+    start_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    end_time TIMESTAMP,
+    FOREIGN KEY (device_id) REFERENCES device(id),
+    FOREIGN KEY (app_id) REFERENCES app(id)
+);
+
+-- 创建statement表
+CREATE TABLE IF NOT EXISTS statement (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    transaction_id BIGINT NOT NULL,
+    type VARCHAR(50) NOT NULL,
+    content TEXT NOT NULL,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (transaction_id) REFERENCES transaction(id)
+);
+
+-- 创建screenshot表
+CREATE TABLE IF NOT EXISTS screenshot (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    statement_id BIGINT NOT NULL,
+    file_path VARCHAR(255) NOT NULL,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (statement_id) REFERENCES statement(id)
+);
+
+-- 创建test_case表
+CREATE TABLE IF NOT EXISTS test_case (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    app_id BIGINT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (app_id) REFERENCES app(id)
+);
+
+-- 创建test_result表
+CREATE TABLE IF NOT EXISTS test_result (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    test_case_id BIGINT NOT NULL,
+    device_id BIGINT NOT NULL,
+    status VARCHAR(50) NOT NULL,
+    start_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    end_time TIMESTAMP,
+    log TEXT,
+    FOREIGN KEY (test_case_id) REFERENCES test_case(id),
+    FOREIGN KEY (device_id) REFERENCES device(id)
 );

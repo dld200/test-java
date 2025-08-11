@@ -13,18 +13,16 @@ spring:
       schema-locations: classpath:schema.sql
       data-locations: classpath:data.sql
 
-mybatis:
-  mapper-locations: classpath:mapper/*.xml
-  type-aliases-package: org.example.common.domain
-  configuration:
-    map-underscore-to-camel-case: true
+  jpa:
+    open-in-view: false
+    show-sql: true
+    database-platform: org.hibernate.dialect.H2Dialect
 
-mapper:
-  mappers: org.example.server.config.BaseDao
-  not-empty: false
-  identity: MYSQL
+  ai:
+    openai:
+        api-key: Xxxxxxxxx
 
 logging:
   level:
-    org.example.dao: debug
+    org.example.server.dao: debug
     org.mybatis: debug
