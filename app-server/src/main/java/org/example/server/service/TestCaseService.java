@@ -2,9 +2,12 @@ package org.example.server.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.common.domain.*;
-import org.example.server.engine.Executor;
+import org.example.mobile.device.impl.IosSimulatorAutomation;
+import org.example.server.dto.DebugReq;
 import org.example.server.engine.Context;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.example.server.engine.DefaultInterceptor;
+import org.example.server.engine.Executor;
+import org.example.server.util.LogbackUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -12,134 +15,101 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Service
-public class TestCaseService  {
-    
+public class TestCaseService {
+
     // 模拟数据存储
     private Map<Long, TestCase> testCaseRepository = new ConcurrentHashMap<>();
     private Map<Long, TestResult> testRecordRepository = new ConcurrentHashMap<>();
     private Map<Long, List<TestResult>> testCaseRecordsMap = new ConcurrentHashMap<>();
-    
-    // 测试执行监听器
-    @Autowired
-    private TestListener executionListener;
-    
+
     // 模拟ID生成器
     private long testCaseIdCounter = 1;
     private long testRecordIdCounter = 1;
     private long statementResultIdCounter = 1;
     private long screenshotIdCounter = 1;
     private long networkRecordIdCounter = 1;
-    
-    
-    public TestResult executeTestCase(TestCase testCase) {
-        log.info("Executing test case: {}", testCase.getTitle());
-        
-        // 创建测试记录对象
-        TestResult testResult = new TestResult();
-        testResult.setId(testRecordIdCounter++);
-        testResult.setTestCaseId(testCase.getId());
-        testResult.setTestCaseName(testCase.getTitle());
-        testResult.setStartTime(new Date());
-        testResult.setStatus("RUNNING");
-        
-        // 通知监听器测试开始
-        executionListener.onTestStart(testResult);
-        
+
+    public String debug(DebugReq req) {
+
+        // 内存日志记录
+        LogbackUtils.on();
+
+        // 创建执行器
+        Executor executor = new Executor();
+
+        // 添加拦截器
+        executor.addInterceptor(new DefaultInterceptor());
+
+        // 设置执行选项
+        Map<String, Object> options = new HashMap<>();
+//        options.put("sleep.after.keyword", true);
+//        options.put("after.keyword.delay", 500);
+//        options.put("screenshot.after.keyword", true);
+
+        // 执行测试用例
+        Context context = new Context();
+        context.setOptions(options);
+        context.setVariables(req.getVariables());
+        context.setAutomation(new IosSimulatorAutomation());
+        TestCase testCase = TestCase.builder().script(req.getScript()).build();
+        context.setTestCase(testCase);
+
+        String logs = "";
         try {
-            // 创建DSL执行器并执行测试用例
-            Executor executor = new Executor();
-            Context context = new Context(testCase);
-            Context resultContext = executor.execute(context);
-            
-            // 收集执行结果
-            List<Statement> statements = collectStatementResults(testResult.getId(), resultContext);
-            List<Screenshot> screenshots = collectScreenshotRecords(testResult.getId());
-            List<Transaction> transactions = collectNetworkRecords(testResult.getId());
-            
-            // 通知监听器各种记录的生成
-            for (Statement statement : statements) {
-                executionListener.onStatementComplete(statement);
-            }
-            
-            for (Screenshot screenshot : screenshots) {
-                executionListener.onScreenshotTaken(screenshot);
-            }
-            
-            for (Transaction transaction : transactions) {
-                executionListener.onNetworkRecorded(transaction);
-            }
-            
-            // 设置测试记录
-            testResult.setStatements(statements);
-//            testResult.setScreenshots(screenshots);
-//            testResult.setNetworks(transactions);
-            testResult.setStatus("PASSED");
-        } catch (Exception e) {
-            testResult.setStatus("FAILED");
-            testResult.setErrorMessage(e.getMessage());
-            // 通知监听器测试出错
-            executionListener.onTestError(testResult, e);
-            log.error("Test execution failed", e);
+            Context result = executor.execute(context);
+        } catch (Throwable e) {
+            log.error("Test execution failed: ", e);
         } finally {
-            testResult.setEndTime(new Date());
-            if (testResult.getStartTime() != null) {
-                testResult.setDuration(testResult.getEndTime().getTime() - testResult.getStartTime().getTime());
-            }
-            
-            // 通知监听器测试完成
-            executionListener.onTestComplete(testResult);
-            
-            // 保存测试记录
-            saveTestRecord(testResult);
+            logs = LogbackUtils.getLogs();
+            LogbackUtils.off();
         }
-        
-        return testResult;
+        return logs;
     }
 
-    
     public TestResult executeTestCase(Long testCaseId) {
         TestCase testCase = testCaseRepository.get(testCaseId);
         if (testCase == null) {
             throw new IllegalArgumentException("Test case not found with id: " + testCaseId);
         }
-        return executeTestCase(testCase);
+//        return executeTestCase(testCase);
+        return null;
     }
-    
-    
+
+
     public TestResult getTestRecord(Long testRecordId) {
         return testRecordRepository.get(testRecordId);
     }
-    
-    
+
+
     public List<TestResult> getTestRecordsByTestCase(Long testCaseId) {
         return testCaseRecordsMap.getOrDefault(testCaseId, new ArrayList<>());
     }
-    
-    
+
+
     public TestResult saveTestRecord(TestResult testResult) {
         testRecordRepository.put(testResult.getId(), testResult);
-        
+
         // 将测试记录关联到测试用例
         List<TestResult> records = testCaseRecordsMap.computeIfAbsent(
-            testResult.getTestCaseId(), k -> new ArrayList<>());
+                testResult.getTestCaseId(), k -> new ArrayList<>());
         records.add(testResult);
-        
+
         return testResult;
     }
 
-    
+
     public TestResult getTestResult(Long id) {
         return null;
     }
 
-    
+
     public Iterable<Object> getTestResultsByTestCase(Long id) {
         return null;
     }
 
     private List<Statement> collectStatementResults(Long testRecordId, Context context) {
         List<Statement> statements = new ArrayList<>();
-        
+
         // 模拟收集语句执行结果
         // 在实际应用中，这会从执行器中获取真实的语句执行信息
         Statement statement = new Statement();
@@ -153,10 +123,10 @@ public class TestCaseService  {
         statements.add(statement);
         return statements;
     }
-    
+
     private List<Screenshot> collectScreenshotRecords(Long testRecordId) {
         List<Screenshot> screenshots = new ArrayList<>();
-        
+
         // 模拟收集截图记录
         Screenshot screenshot = new Screenshot();
         screenshot.setId(screenshotIdCounter++);
@@ -164,14 +134,14 @@ public class TestCaseService  {
         screenshot.setFileName("sample_screenshot.png");
         screenshot.setCreateTime(new Date());
         screenshot.setDescription("Sample screenshot");
-        
+
         screenshots.add(screenshot);
         return screenshots;
     }
-    
+
     private List<Transaction> collectNetworkRecords(Long testRecordId) {
         List<Transaction> transactions = new ArrayList<>();
-        
+
         // 模拟收集网络记录
         Transaction transaction = new Transaction();
         transaction.setUrl("https://api.example.com/test");
@@ -184,7 +154,7 @@ public class TestCaseService  {
         transactions.add(transaction);
         return transactions;
     }
-    
+
     // 辅助方法：添加测试用例到仓库
     public void addTestCase(TestCase testCase) {
         if (testCase.getId() == null) {

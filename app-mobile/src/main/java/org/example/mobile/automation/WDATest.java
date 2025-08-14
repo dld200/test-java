@@ -4,7 +4,7 @@ public class WDATest {
     public static void main(String[] args) {
         String deviceId = "F0F99D79-FCB0-45C3-AD55-89CCCA9BDBFD";
         String bundleId = "ca.snappay.snaplii.test";
-        String sessionId = "CD2348B2-F623-4E42-86D3-C6E10CC68AA0";
+//        String sessionId = "CD2348B2-F623-4E42-86D3-C6E10CC68AA0";
 
         // 启动 WDA
         WDAUtils.launchWDA(deviceId, bundleId);
@@ -21,7 +21,7 @@ public class WDATest {
         String fileName = WDAUtils.screenshot();
         System.out.println("Screenshot: " + fileName);
 
-        WDAUtils.swipeLeft();
+        WDAUtils.swipe("left");
 
         // 查找元素并点击
         String elementId = WDAUtils.findElement("name", "Log in/Sign up");

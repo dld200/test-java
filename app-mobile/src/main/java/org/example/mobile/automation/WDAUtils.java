@@ -39,12 +39,11 @@ public class WDAUtils {
         //check session
         if (isWDARunning() && sessionId != null) {
             return;
+        } else {
+            XCUITestUtils.runCommand("xcrun simctl launch " + deviceId + " com.facebook.WebDriverAgentRunner");
+            createSession(bundleId);
         }
-        // 启动wda
-        XCUITestUtils.runCommand("xcrun simctl launch " + deviceId + " com.facebook.WebDriverAgentRunner");
-        // 等待 WDA 端口就绪
         waitForWDA();
-        createSession(bundleId);
     }
 
     public static void launchWDA(String deviceId, String bundleId, String sessionId) {
@@ -118,8 +117,8 @@ public class WDAUtils {
     }
 
 
-    /** 获取页面元素树
-     *
+    /**
+     * 获取页面元素树
      */
     public static String getPageSource() {
         String res = HttpUtils.sendGet(WDA_URL + "/session/" + sessionId + "/source");
@@ -155,7 +154,6 @@ public class WDAUtils {
                 "");
     }
 
-
     /**
      * 点击元素
      */
@@ -175,7 +173,7 @@ public class WDAUtils {
         HttpUtils.sendPost(WDA_URL + "/session/" + sessionId + "/element/" + elementId + "/value", body);
     }
 
-    public static void pressButton(String buttonName){
+    public static void pressButton(String buttonName) {
         ensureSession();
 //        const _map = {
 //                "HOME": "home",
@@ -241,12 +239,22 @@ public class WDAUtils {
         }
     }
 
-
-    public static void swipeLeft() {
-        WDAUtils.swipe(0, 200, 400, 200, 0.01f);
+    public static void swipe(String direction) {
+        switch (direction) {
+            case "left":
+                WDAUtils.swipe(0, 200, 400, 200, 0.01f);
+                break;
+            case "right":
+                WDAUtils.swipe(400, 200, 0, 200, 0.01f);
+                break;
+            case "up":
+                WDAUtils.swipe(50, 500, 50, 20, 0.01f);
+                break;
+            case "down":
+                break;
+            default:
+                break;
+        }
     }
 
-    public static void swipeDown() {
-        WDAUtils.swipe(50, 500, 50, 20, 0.01f);
-    }
 }

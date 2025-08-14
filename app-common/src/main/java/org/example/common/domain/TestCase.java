@@ -23,9 +23,10 @@ public class TestCase {
 
     private String title;
 
-    private String dsl;
+    private String script;
 
     private Date createTime;
 
     private Date updateTime;
+
 }

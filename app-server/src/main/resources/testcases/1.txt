@@ -1,0 +1,6 @@
+setup('F0F99D79-FCB0-45C3-AD55-89CCCA9BDBFD', 'ca.snappay.snaplii.test')
+click('Search from over 200 top brands')
+input('Enter a brand name', 'amazon')
+screenshot('xx.png')
+swipe('left')
+click('Log in/Sign up')
