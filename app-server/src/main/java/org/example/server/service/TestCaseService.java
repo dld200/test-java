@@ -42,7 +42,7 @@ public class TestCaseService {
 
         // 设置执行选项
         Map<String, Object> options = new HashMap<>();
-//        options.put("sleep.after.keyword", true);
+        options.put("sleep.before.keyword", 1000);
 //        options.put("after.keyword.delay", 500);
 //        options.put("screenshot.after.keyword", true);
 
@@ -162,5 +162,4 @@ public class TestCaseService {
         }
         testCaseRepository.put(testCase.getId(), testCase);
     }
-
 }

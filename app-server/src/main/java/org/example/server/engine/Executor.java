@@ -53,7 +53,9 @@ public class Executor {
         Binding binding = new Binding();
 
         // 将上下文中的变量添加到绑定中
-        context.getVariables().forEach(binding::setVariable);
+        if(context.getVariables() != null) {
+            context.getVariables().forEach(binding::setVariable);
+        }
 
         // 添加一些常用的内置函数
         binding.setVariable("ctx", context);

@@ -26,8 +26,8 @@ public class DefaultInterceptor implements Interceptor {
     @Override
     public void beforeKeyword(Context context, String keyword) {
         Object sleepBefore = context.getOption("sleep.before.keyword");
-        if (sleepBefore != null && Boolean.parseBoolean(sleepBefore.toString())) {
-            sleep(context, "before.statement.delay");
+        if (sleepBefore != null && Integer.parseInt(sleepBefore.toString()) > 0) {
+            sleep(context, "sleep.before.keyword");
         }
     }
 

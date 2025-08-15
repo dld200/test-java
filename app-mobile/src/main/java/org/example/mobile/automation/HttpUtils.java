@@ -1,5 +1,6 @@
 package org.example.mobile.automation;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -11,22 +12,22 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 
+@Slf4j
 public class HttpUtils {
-
     public static String sendPost(String url, String body) {
-        System.out.println(url + " " + body);
+        log.info("http post: {}, {}", url, body);
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpPost httpPost = new HttpPost(url);
             httpPost.setHeader("Content-Type", "application/json");
-            
+
             StringEntity entity = new StringEntity(body, "UTF-8");
             httpPost.setEntity(entity);
-            
+
             try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
                 HttpEntity responseEntity = response.getEntity();
                 if (responseEntity != null) {
                     String res = EntityUtils.toString(responseEntity, "UTF-8");
-                    System.out.println(res);
+                    log.info("response: {}", res);
                     return res;
                 }
             }
@@ -37,16 +38,16 @@ public class HttpUtils {
     }
 
     public static String sendGet(String url) {
-        System.out.println(url);
+        log.info("http get: {}", url);
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpGet httpGet = new HttpGet(url);
-            
+
             try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
                 HttpEntity entity = response.getEntity();
                 if (entity != null) {
                     String res = EntityUtils.toString(entity, "UTF-8");
-                    if(res.length() < 10240){
-                        System.out.println(res);
+                    if (res.length() < 10240) {
+                        log.info("response: {}", res);
                     }
                     return res;
                 }
