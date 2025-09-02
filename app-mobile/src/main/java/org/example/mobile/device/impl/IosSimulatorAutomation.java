@@ -24,7 +24,7 @@ public class IosSimulatorAutomation implements Automation {
 
 
     @Override
-    public Object source() {
+    public String source() {
         String res = HttpUtils.sendGet(WDA_URL + "/session/" + sessionId + "/source");
         JsonObject json = JsonParser.parseString(res).getAsJsonObject();
         if (json.has("value")) {
@@ -72,13 +72,13 @@ public class IosSimulatorAutomation implements Automation {
     public void swipe(String direction) {
         switch (direction) {
             case "left":
-                swipe(0, 200, 400, 200, 0.01f);
+                swipe(0, 200, 400, 200, 0.1f);
                 break;
             case "right":
-                swipe(400, 200, 0, 200, 0.01f);
+                swipe(400, 200, 0, 200, 0.1f);
                 break;
             case "up":
-                swipe(50, 500, 50, 20, 0.01f);
+                swipe(50, 500, 50, 20, 0.1f);
                 break;
             case "down":
                 break;
@@ -93,7 +93,7 @@ public class IosSimulatorAutomation implements Automation {
         if (isWDARunning() && sessionId != null) {
             return;
         } else {
-            XCUITestUtils.runCommand("xcrun simctl launch " + deviceId + " com.facebook.WebDriverAgentRunner");
+            XCUITestUtils.runCommand("xcrun simctl launch " + deviceId + " xx.facebook.WebDriverAgentRunner");
             createSession(bundleId);
         }
         waitForWDA();
@@ -157,7 +157,7 @@ public class IosSimulatorAutomation implements Automation {
 
         JsonObject json = JsonParser.parseString(res).getAsJsonObject();
         JsonObject value = json.getAsJsonObject("value");
-        sessionId = value.has("sessionId") ? value.get("sessionId").getAsString() : value.getAsJsonObject().get("sessionId").getAsString();
+        sessionId = value.get("sessionId") != null ? value.get("sessionId").getAsString() : value.getAsJsonObject().get("sessionId").getAsString();
 
         if (sessionId == null || sessionId.isEmpty()) {
             throw new RuntimeException("Failed to create WDA session: " + res);
@@ -187,6 +187,7 @@ public class IosSimulatorAutomation implements Automation {
                 }
             }
         }
+        // todo: 从多元素中找最合适的元素
         throw new RuntimeException("Element not found: " + res);
     }
 

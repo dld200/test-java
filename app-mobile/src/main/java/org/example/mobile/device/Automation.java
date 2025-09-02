@@ -9,7 +9,7 @@ public interface Automation {
 
     void setup(String deviceId, String bundleId);
 
-    Object source();
+    String source();
 
     void click(String elementId);
 

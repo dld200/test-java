@@ -1,5 +1,7 @@
 package org.example.mobile.xml;
 
+import org.example.common.model.UIElement;
+
 public class UIElementXmlSerializer {
 
     public static String toXml(UIElement root) {

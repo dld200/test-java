@@ -15,7 +15,7 @@ import java.io.IOException;
 @Slf4j
 public class HttpUtils {
     public static String sendPost(String url, String body) {
-        log.info("http post: {}, {}", url, body);
+        log.info("Post request: {}, {}", url, body);
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpPost httpPost = new HttpPost(url);
             httpPost.setHeader("Content-Type", "application/json");
@@ -27,7 +27,7 @@ public class HttpUtils {
                 HttpEntity responseEntity = response.getEntity();
                 if (responseEntity != null) {
                     String res = EntityUtils.toString(responseEntity, "UTF-8");
-                    log.info("response: {}", res);
+                    log.info("Post response: {}", res);
                     return res;
                 }
             }
@@ -38,7 +38,7 @@ public class HttpUtils {
     }
 
     public static String sendGet(String url) {
-        log.info("http get: {}", url);
+        log.info("Get request: {}", url);
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpGet httpGet = new HttpGet(url);
 
@@ -47,7 +47,7 @@ public class HttpUtils {
                 if (entity != null) {
                     String res = EntityUtils.toString(entity, "UTF-8");
                     if (res.length() < 10240) {
-                        log.info("response: {}", res);
+                        log.info("Get response: {}", res);
                     }
                     return res;
                 }

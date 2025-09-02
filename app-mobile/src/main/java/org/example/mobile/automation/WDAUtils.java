@@ -40,7 +40,7 @@ public class WDAUtils {
         if (isWDARunning() && sessionId != null) {
             return;
         } else {
-            XCUITestUtils.runCommand("xcrun simctl launch " + deviceId + " com.facebook.WebDriverAgentRunner");
+            XCUITestUtils.runCommand("xcrun simctl launch " + deviceId + " xx.facebook.WebDriverAgentRunner");
             createSession(bundleId);
         }
         waitForWDA();

@@ -1,5 +1,7 @@
 package org.example.mobile.xml;
 
+import org.example.common.model.UIElement;
+
 public class UIElementHtmlRenderer {
 
     public static String toHtml(UIElement root, float scale) {
@@ -8,10 +10,10 @@ public class UIElementHtmlRenderer {
           .append("<meta charset=\"UTF-8\">\n")
           .append("<style>\n")
           .append("body { margin:0; background:#f0f0f0; }\n")
-          .append("div { overflow: hidden; }\n")
-          .append(".screen { position:relative; background:white; }\n")
+//          .append("div { overflow: hidden; }\n")
+          .append(".screen { position:relative; background:white; transform: scale(0.75); transform-origin: top left;}\n")
           .append(".element { position:absolute; box-sizing:border-box; ")
-          .append("font-size:10px; overflow:hidden; white-space:nowrap; }\n")
+          .append("font-size:14px; overflow:hidden; word-wrap: break-word; }\n")
           .append(".type-Button { border:1px solid #007bff; background:rgba(0,123,255,0.1); }\n")
           .append(".type-TextField, .type-SecureTextField { border:1px solid #28a745; background:rgba(40,167,69,0.1); }\n")
           .append(".type-StaticText { border:1px dashed #6c757d; background:rgba(108,117,125,0.1); }\n")

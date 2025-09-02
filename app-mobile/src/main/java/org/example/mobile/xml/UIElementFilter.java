@@ -1,42 +1,42 @@
 package org.example.mobile.xml;
 
+import org.example.common.model.UIElement;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class UIElementFilter {
 
-    /** 主方法：先过滤不可见不可用，再删父子同 bounds */
-    public static UIElement clean(UIElement root) {
-        if (root == null) return null;
-
-        // 递归处理子节点
-        List<UIElement> validChildren = new ArrayList<>();
-        for (UIElement child : root.children) {
-            UIElement cleanedChild = clean(child);
-            if (cleanedChild != null) {
-                validChildren.add(cleanedChild);
+    /**
+     * 主方法：先过滤不可见不可用，再删父子同 bounds
+     */
+    public static void clean(UIElement element) {
+        if (element == null) return;
+        List<UIElement> childrenCopy = new ArrayList<>(element.children);
+        for (UIElement child : childrenCopy) {
+            clean(child); // 递归先简化子节点
+        }
+        UIElement parent = element.parent;
+        if (parent != null) {
+            if (element.type.equals("XCUIElementTypeKeyboard")) {
+                parent.children.remove(element);
+                element.children.clear();
+                return;
+            }
+            if (!isValid(element) || element.eliminate(parent)) {
+                // 把 element 的子元素挂到 parent 上
+                for (UIElement child : element.children) {
+                    child.parent = parent;
+                    parent.children.add(child);
+                }
+                // 从 parent 中移除 element
+                parent.children.remove(element);
+                element.children.clear();
             }
         }
-        root.children = validChildren;
-
-        // 过滤不可见/不可交互节点
-        if (!isValid(root) && root.children.isEmpty()) {
-            return null;
-        }
-
-        // 检查父子同 bounds
-        for (UIElement child : root.children) {
-            if (root.sameBounds(child)) {
-                // 返回子节点，等于删除父节点
-                child.parent = root.parent;
-                return child;
-            }
-        }
-
-        return root;
     }
 
     private static boolean isValid(UIElement node) {
-        return node.visible && node.enabled && node.accessible;
+        return node.y > 837 && node.accessible || node.y < 837 && node.visible && node.accessible;
     }
 }

@@ -17,7 +17,6 @@ public class Executor {
     private static final List<Keyword> keywords = new ArrayList<>();
 
     static {
-        // 添加关键字
         keywords.add(new SetupKeyword());
         keywords.add(new ClickKeyword());
         keywords.add(new InputKeyword());

@@ -2,16 +2,16 @@ package org.example.server.controller;
 
 import org.example.common.dto.Result;
 import org.example.server.dto.DebugReq;
-import org.example.server.service.TestCaseService;
+import org.example.server.service.TestScriptService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-@RequestMapping("test")
+@RequestMapping("tests")
 @RestController
-public class TestController {
+public class TestScriptController {
 
     @Autowired
-    private TestCaseService testCaseService;
+    private TestScriptService testCaseService;
 
     @GetMapping("/")
     public String hello() {
@@ -19,7 +19,7 @@ public class TestController {
     }
 
     @PostMapping("debug")
-    public Result<String> debug( @RequestBody DebugReq req) {
+    public Result<String> debug(@RequestBody DebugReq req) {
         return Result.success(testCaseService.debug(req));
     }
 }

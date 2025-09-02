@@ -9,7 +9,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.FetchType;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 @Data
 @Entity
@@ -23,10 +28,16 @@ public class TestCase {
 
     private String title;
 
+    private String variables;
+
+    private String config;
+
     private String script;
+
+    @OneToMany(mappedBy = "testCase", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<TestStep> testSteps;
 
     private Date createTime;
 
     private Date updateTime;
-
 }

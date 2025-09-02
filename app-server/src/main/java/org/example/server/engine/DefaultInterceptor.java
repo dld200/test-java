@@ -17,9 +17,13 @@ public class DefaultInterceptor implements Interceptor {
 
     @Override
     public void afterExecution(Context context) {
+        Object sleepBefore = context.getOption("sleep.before.execution");
+        if (sleepBefore != null && Boolean.parseBoolean(sleepBefore.toString())) {
+            sleep(context, "after.execution.delay");
+        }
         Object screenshotEnabled = context.getOption("screenshot.after.execution");
         if (screenshotEnabled != null && Boolean.parseBoolean(screenshotEnabled.toString())) {
-            screenshot(context, "final");
+            screenshot(context, "final.png");
         }
     }
 
@@ -35,7 +39,11 @@ public class DefaultInterceptor implements Interceptor {
     public void afterKeyword(Context context, String keyword) {
         Object screenshotEnabled = context.getOption("screenshot.after.keyword");
         if (screenshotEnabled != null && Boolean.parseBoolean(screenshotEnabled.toString())) {
-            screenshot(context, keyword);
+            screenshot(context, keyword + ".png");
+        }
+        Object sleepBefore = context.getOption("sleep.after.keyword");
+        if (sleepBefore != null && Integer.parseInt(sleepBefore.toString()) > 0) {
+            sleep(context, "sleep.after.keyword");
         }
     }
 

@@ -2,11 +2,21 @@ package org.example.server.util;
 
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.PatternLayout;
 import org.example.server.engine.MdcAppender;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 public class LogbackUtils {
+
+    static PatternLayout layout = new PatternLayout();
+
+    static {
+        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+        layout.setContext(context);
+        layout.setPattern("%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n");
+        layout.start();
+    }
 
     public static void on() {
         MDC.put("logToMemory", "true");
@@ -27,7 +37,7 @@ public class LogbackUtils {
         StringBuilder sb = new StringBuilder();
         if (appender != null) {
             appender.getEvents().forEach(event -> {
-                sb.append(event.getFormattedMessage()).append("\n");
+                sb.append(layout.doLayout(event)).append("\n");
             });
             appender.clear();
         }

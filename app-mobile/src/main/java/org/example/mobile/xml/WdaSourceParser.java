@@ -1,5 +1,6 @@
 package org.example.mobile.xml;
 
+import org.example.common.model.UIElement;
 import org.w3c.dom.*;
 import javax.xml.parsers.*;
 import java.io.StringReader;
