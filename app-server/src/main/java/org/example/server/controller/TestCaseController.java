@@ -3,6 +3,7 @@ package org.example.server.controller;
 import org.example.common.domain.TestCase;
 import org.example.common.domain.TestStep;
 import org.example.common.dto.Result;
+import org.example.server.dto.DebugReq;
 import org.example.server.service.TestCaseService;
 import org.example.server.service.TestStepService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,15 +76,8 @@ public class TestCaseController {
         return testStepService.findByTestCaseId(id);
     }
 
-    /**
-     * 执行测试用例
-     *
-     * @param id TestCase的ID
-     * @return 执行结果
-     */
-    @PostMapping("/{id}/execute")
-    public Result<String> execute(@PathVariable Long id) {
-        String result = testCaseService.execute(id);
-        return Result.success(result);
+    @PostMapping("{id}/run")
+    public Result<String> run(@PathVariable Long id) {
+        return Result.success(testCaseService.execute(id));
     }
 }
