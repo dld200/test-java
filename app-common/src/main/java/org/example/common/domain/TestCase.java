@@ -14,7 +14,6 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.FetchType;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @Data
 @Entity
@@ -26,7 +25,7 @@ public class TestCase {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String title;
+    private String name;
 
     private String variables;
 
@@ -35,7 +34,7 @@ public class TestCase {
     private String script;
 
     @OneToMany(mappedBy = "testCase", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<TestStep> testSteps;
+    private List<TestStep> steps;
 
     private Date createTime;
 

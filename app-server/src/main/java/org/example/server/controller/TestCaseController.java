@@ -28,7 +28,7 @@ public class TestCaseController {
      * @return 保存后的TestCase对象
      */
     @PostMapping
-    public TestCase save(@RequestBody TestCase testCase) {
+    public TestCase saveTestCase(@RequestBody TestCase testCase) {
         return testCaseService.save(testCase);
     }
 
@@ -39,7 +39,7 @@ public class TestCaseController {
      * @return 删除是否成功
      */
     @DeleteMapping("/{id}")
-    public boolean delete(@PathVariable Long id) {
+    public boolean deleteTestCase(@PathVariable Long id) {
         testCaseService.deleteById(id);
         return true;
     }
@@ -51,7 +51,7 @@ public class TestCaseController {
      * @return TestCase对象
      */
     @GetMapping("/{id}")
-    public TestCase getById(@PathVariable Long id) {
+    public TestCase getTestCase(@PathVariable Long id) {
         return testCaseService.findById(id);
     }
 
@@ -61,23 +61,12 @@ public class TestCaseController {
      * @return TestCase列表
      */
     @GetMapping
-    public List<TestCase> getAll() {
+    public List<TestCase> listTestCases() {
         return testCaseService.findAll();
     }
 
-    /**
-     * 根据TestCase ID获取关联的TestSteps
-     *
-     * @param id TestCase的ID
-     * @return TestStep列表
-     */
-    @GetMapping("/{id}/steps")
-    public List<TestStep> getTestStepsByTestCaseId(@PathVariable Long id) {
-        return testStepService.findByTestCaseId(id);
-    }
-
     @PostMapping("{id}/run")
-    public Result<String> run(@PathVariable Long id) {
+    public Result<String> runTestCase(@PathVariable Long id) {
         return Result.success(testCaseService.execute(id));
     }
 }

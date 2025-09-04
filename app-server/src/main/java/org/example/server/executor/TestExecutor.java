@@ -25,7 +25,7 @@ public class TestExecutor {
         }
 
         // 获取TestSteps
-        for (TestStep testStep : testCase.getTestSteps()) {
+        for (TestStep testStep : testCase.getSteps()) {
             try {
                 IStep step = StepFactory.createStep(testStep.getType(), context.replaceVariables(testStep.getConfig()), context);
                 step.execute(testStep, context);

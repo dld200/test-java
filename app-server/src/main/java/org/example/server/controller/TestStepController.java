@@ -21,7 +21,7 @@ public class TestStepController {
      * @return 保存后的TestStep对象
      */
     @PostMapping
-    public TestStep save(@RequestBody TestStep testStep) {
+    public TestStep saveTestStep(@RequestBody TestStep testStep) {
         return testStepService.save(testStep);
     }
 
@@ -32,7 +32,7 @@ public class TestStepController {
      * @return 删除是否成功
      */
     @DeleteMapping("/{id}")
-    public boolean delete(@PathVariable Long id) {
+    public boolean deleteTestStep(@PathVariable Long id) {
         testStepService.deleteById(id);
         return true;
     }
@@ -44,17 +44,8 @@ public class TestStepController {
      * @return TestStep对象
      */
     @GetMapping("/{id}")
-    public TestStep getById(@PathVariable Long id) {
+    public TestStep getTestStep(@PathVariable Long id) {
         return testStepService.findById(id);
     }
 
-    /**
-     * 获取所有TestStep
-     *
-     * @return TestStep列表
-     */
-    @GetMapping
-    public List<TestStep> getAll() {
-        return testStepService.findAll();
-    }
 }

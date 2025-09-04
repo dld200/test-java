@@ -1,22 +1,14 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:testdb
-    driver-class-name: org.h2.Driver
-    username: sa
-    password: password
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
-  sql:
-    init:
-      schema-locations: classpath:schema.sql
-      data-locations: classpath:data.sql
-
+    url: jdbc:mysql://localhost:3306/app?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: xxxxxxxx
   jpa:
-    open-in-view: false
-    show-sql: true
-    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update  # 可选: create, update, validate
+    show-sql: true      # 可选: 打印 SQL
+    database-platform: org.hibernate.dialect.MySQL8Dialect
 
   ai:
     openai:

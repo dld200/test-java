@@ -4,12 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.common.domain.TestCase;
 import org.example.common.domain.TestStep;
 import org.example.server.dao.TestCaseDao;
-import org.example.server.dto.DebugReq;
 import org.example.server.executor.TestExecutor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,7 +34,7 @@ public class TestCaseService {
         TestCase savedTestCase = testCaseDao.save(testCase);
         
         // 保存关联的TestSteps
-        List<TestStep> testSteps = testCase.getTestSteps();
+        List<TestStep> testSteps = testCase.getSteps();
         if (testSteps != null) {
             for (TestStep testStep : testSteps) {
                 // 设置TestStep关联的TestCase
@@ -63,7 +61,7 @@ public class TestCaseService {
      * @return TestCase对象
      */
     public TestCase findById(Long id) {
-        Optional<TestCase> testCase = testCaseDao.findWithTestStepsById(id);
+        Optional<TestCase> testCase = testCaseDao.findById(id);
         return testCase.orElse(null);
     }
 
