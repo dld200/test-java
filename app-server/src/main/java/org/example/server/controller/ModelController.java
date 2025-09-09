@@ -7,6 +7,7 @@ import org.example.server.service.ModelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RequestMapping("models")
@@ -22,23 +23,28 @@ public class ModelController {
     }
 
     @PostMapping
-    public Result<PageModel> saveModel(@RequestBody ModelReq req) {
+    public Result<PageModel> saveModel(@RequestBody PageModel req) {
         return Result.success(modelService.save(req));
     }
 
     @GetMapping("{id}")
-    public Result<PageModel> getModel(@RequestBody Long id) {
+    public Result<PageModel> getModel(@PathVariable Long id) {
         return Result.success(modelService.findById(id));
     }
 
+    @PostMapping("/capture")
+    public Result<PageModel> capturePage() throws IOException {
+        return Result.success(modelService.capture());
+    }
+
     @DeleteMapping("{id}")
-    public Result<Void> deleteModel(@RequestBody Long id) {
+    public Result<Void> deleteModel(@PathVariable Long id) {
         modelService.deleteById(id);
         return Result.success();
     }
 
     @GetMapping("{id}/summary")
-    public Result<String> getModelSummary(@RequestParam Long id) {
+    public Result<String> getModelSummary(@PathVariable Long id) {
         return Result.success(modelService.summary(id));
     }
 }

@@ -27,8 +27,6 @@ public class TestCase {
 
     private String name;
 
-    private String variables;
-
     private String config;
 
     private String script;

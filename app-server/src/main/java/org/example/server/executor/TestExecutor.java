@@ -16,13 +16,13 @@ public class TestExecutor {
     public void execute(TestCase testCase) {
         // 创建执行上下文
         ExecutionContext context = new ExecutionContext();
-        Map<String, String> variables = JSON.parseObject(testCase.getVariables(), new TypeReference<>() {
+        Map<String, String> variables = JSON.parseObject(testCase.getConfig(), new TypeReference<>() {
         });
 
         // 将TestCase的variables放入执行上下文
-        if (testCase.getVariables() != null) {
-            context.getVariables().putAll(variables);
-        }
+//        if (testCase.getConfig() != null) {
+//            context.getVariables().putAll(variables);
+//        }
 
         // 获取TestSteps
         for (TestStep testStep : testCase.getSteps()) {
