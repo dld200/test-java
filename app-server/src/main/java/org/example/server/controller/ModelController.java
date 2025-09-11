@@ -10,14 +10,14 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.List;
 
-@RequestMapping("models")
+@RequestMapping("/api/models")
 @RestController
 public class ModelController {
 
     @Autowired
     private ModelService modelService;
 
-    @GetMapping("/")
+    @GetMapping
     public Result<List<PageModel>> queryModels() {
         return Result.success(modelService.query());
     }

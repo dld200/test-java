@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -18,7 +19,7 @@ import java.util.UUID;
 @Service
 public class FileService {
 
-    @Value("${image.upload.dir:/tmp/images}")
+    @Value("${image.upload.dir:/Users/snap/workspace/app-agent/uploads}")
     private String uploadDir;
 
     @PostConstruct
@@ -38,16 +39,25 @@ public class FileService {
 
     public String saveFile(File file) throws IOException {
         //保存到uuid目录下
-        Path filePath = Paths.get(uploadDir, UUID.randomUUID().toString(), file.getName());
+        String uuid = UUID.randomUUID().toString();
+        Path filePath = Paths.get(uploadDir, uuid, file.getName());
+        Files.createDirectories(filePath.getParent());
         Files.write(filePath, Files.readAllBytes(file.toPath()));
-        return filePath.toString();
+        return uuid;
     }
 
-    public byte[] getImage(Long id) throws IOException {
-        // 首先尝试按图片文件名查找
-        Path imagePath = Paths.get(uploadDir, id.toString());
-        if (Files.exists(imagePath)) {
-            return Files.readAllBytes(imagePath);
+    public byte[] getImage(String uuid) throws IOException {
+        Path imagePath = Paths.get(uploadDir, uuid);
+        //读取下层的文件
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(imagePath)) {
+            for (Path filePath : stream) {
+                if (Files.isRegularFile(filePath)) {
+                    System.out.println("找到文件: " + filePath.getFileName());
+                    // 读取内容（比如二进制图像、文本等）
+                    byte[] bytes = Files.readAllBytes(filePath);
+                    return bytes;
+                }
+            }
         }
         return null;
     }

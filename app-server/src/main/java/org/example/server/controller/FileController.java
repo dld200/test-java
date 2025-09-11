@@ -10,7 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 
-@RequestMapping("files")
+@RequestMapping("/api/files")
 @RestController
 public class FileController {
 
@@ -26,10 +26,10 @@ public class FileController {
         }
     }
 
-    @GetMapping(value = "/{id}", produces = MediaType.IMAGE_PNG_VALUE)
-    public void getImage(@PathVariable Long id, HttpServletResponse response) {
+    @GetMapping(value = "/{uuid}", produces = MediaType.IMAGE_PNG_VALUE)
+    public void getImage(@PathVariable String uuid, HttpServletResponse response) {
         try {
-            byte[] imageData = fileService.getImage(id);
+            byte[] imageData = fileService.getImage(uuid);
             if (imageData != null) {
                 response.setContentType(MediaType.IMAGE_PNG_VALUE);
                 OutputStream os = response.getOutputStream();
@@ -40,11 +40,7 @@ public class FileController {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             }
         } catch (IOException e) {
-            try {
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            } catch (Exception ex) {
-                // 忽略异常
-            }
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
 }

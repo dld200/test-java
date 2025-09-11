@@ -59,9 +59,14 @@ public class ModelService {
     public PageModel capture() throws IOException {
         Automation automation = new IosSimulatorAutomation();
         automation.setup("F0F99D79-FCB0-45C3-AD55-89CCCA9BDBFD", "ca.snappay.snaplii.test");
-        automation.screenshot("xxxx.png");
-        URL url = ResourceReader.class.getClassLoader().getResource("xxxx.png");
-        fileService.saveFile(new File(url.getFile()));
+        automation.screenshot("/Users/snap/workspace/app-agent/uploads/xxxx.png");
+//        URL url = ResourceReader.class.getClassLoader().getResource("xxxx.png");
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        String file = fileService.saveFile(new File("/Users/snap/workspace/app-agent/uploads/xxxx.png"));
         String source = automation.source();
         UIElement cleanTree = WdaCleanTreeBuilder.parseAndClean(source);
         String json = JSON.toJSONString(cleanTree, SerializerFeature.SortField, SerializerFeature.PrettyFormat);
@@ -70,7 +75,7 @@ public class ModelService {
 
         PageModel pageModel = new PageModel();
         pageModel.setName("New Model");
-        pageModel.setScreenshot("");
+        pageModel.setScreenshot("http://127.0.0.1:8080/api/files/" + file);
         pageModel.setHtml(html);
         pageModel.setXml(xml);
         pageModel.setJson(json);
