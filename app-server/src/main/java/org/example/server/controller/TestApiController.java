@@ -4,7 +4,6 @@ import org.example.common.domain.TestCase;
 import org.example.common.dto.Result;
 import org.example.server.service.TestCaseService;
 import org.example.server.service.TestStepService;
-import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
