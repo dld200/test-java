@@ -7,7 +7,7 @@
         </encoder>
     </appender>
 
-    <appender name="MDC_MEMORY" class="org.example.server.engine.MdcAppender"/>
+    <appender name="MDC_MEMORY" class="org.example.server.util.MdcLogAppender"/>
 
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>

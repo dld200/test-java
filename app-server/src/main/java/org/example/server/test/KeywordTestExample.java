@@ -2,9 +2,9 @@ package org.example.server.test;
 
 import org.example.common.domain.TestCase;
 import org.example.mobile.device.impl.IosSimulatorAutomation;
-import org.example.server.engine.Context;
-import org.example.server.engine.DefaultInterceptor;
-import org.example.server.engine.Executor;
+import org.example.server.engine.groovy.MobileContext;
+import org.example.server.engine.groovy.DefaultInterceptor;
+import org.example.server.engine.groovy.Executor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,13 +35,13 @@ public class KeywordTestExample {
         options.put("screenshot.after.statement", true);
 
         // 执行测试用例
-        Context context = new Context();
-        context.setOptions(options);
-        context.setAutomation(new IosSimulatorAutomation());
+        MobileContext mobileContext = new MobileContext();
+        mobileContext.setOptions(options);
+        mobileContext.setAutomation(new IosSimulatorAutomation());
 
         try {
-            Context resultContext = executor.execute(context);
-            System.out.println("Test execution completed. Result: " + resultContext.getResult());
+            MobileContext resultMobileContext = executor.execute(mobileContext);
+            System.out.println("Test execution completed. Result: " + resultMobileContext.getResult());
         } catch (Exception e) {
             System.err.println("Test execution failed: " + e.getMessage());
             e.printStackTrace();

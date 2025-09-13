@@ -2,26 +2,19 @@ package org.example.server.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import org.checkerframework.checker.units.qual.A;
 import org.example.common.domain.PageModel;
 import org.example.common.model.UIElement;
 import org.example.mobile.device.Automation;
 import org.example.mobile.device.impl.IosSimulatorAutomation;
-import org.example.mobile.xml.UIElementHtmlRenderer;
-import org.example.mobile.xml.UIElementXmlSerializer;
-import org.example.mobile.xml.WdaCleanTreeBuilder;
+import org.example.mobile.wda.UIElementHtmlRenderer;
+import org.example.mobile.wda.UIElementXmlSerializer;
+import org.example.mobile.wda.WdaCleanTreeBuilder;
 import org.example.server.dao.PageModelDao;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.init.ResourceReader;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 

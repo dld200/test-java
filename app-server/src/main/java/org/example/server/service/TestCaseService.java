@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.common.domain.TestCase;
 import org.example.common.domain.TestStep;
 import org.example.server.dao.TestCaseDao;
-import org.example.server.executor.TestExecutor;
+import org.example.server.engine.ExecuteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +22,7 @@ public class TestCaseService {
     private TestStepService testStepService;
 
     @Autowired
-    private TestExecutor testExecutor;
+    private ExecuteService executeService;
 
     /**
      * 保存TestCase信息
@@ -82,7 +82,7 @@ public class TestCaseService {
             }
 
             // 执行测试用例
-            testExecutor.execute(testCase);
+            executeService.execute(testCase);
 
             return "Test case executed successfully";
         } catch (Exception e) {

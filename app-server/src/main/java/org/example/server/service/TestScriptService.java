@@ -4,10 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.common.domain.*;
 import org.example.mobile.device.impl.IosSimulatorAutomation;
 import org.example.server.dto.DebugReq;
-import org.example.server.engine.Context;
-import org.example.server.engine.DefaultInterceptor;
-import org.example.server.engine.Executor;
-import org.example.server.util.LogbackUtils;
+import org.example.server.engine.groovy.MobileContext;
+import org.example.server.engine.groovy.DefaultInterceptor;
+import org.example.server.engine.groovy.Executor;
+import org.example.server.util.LogbackUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -32,7 +32,7 @@ public class TestScriptService {
     public String debug(DebugReq req) {
 
         // 内存日志记录
-        LogbackUtils.on();
+        LogbackUtil.on();
 
         // 创建执行器
         Executor executor = new Executor();
@@ -46,21 +46,21 @@ public class TestScriptService {
         options.put("sleep.before.execution", 500);
 
         // 执行测试用例
-        Context context = new Context();
-        context.setOptions(options);
-        context.setVariables(req.getVariables());
-        context.setAutomation(new IosSimulatorAutomation());
+        MobileContext mobileContext = new MobileContext();
+        mobileContext.setOptions(options);
+        mobileContext.setVariables(req.getVariables());
+        mobileContext.setAutomation(new IosSimulatorAutomation());
         TestCase testCase = TestCase.builder().script(req.getScript()).build();
-        context.setTestCase(testCase);
+        mobileContext.setTestCase(testCase);
 
         String logs = "";
         try {
-            Context result = executor.execute(context);
+            MobileContext result = executor.execute(mobileContext);
         } catch (Throwable e) {
             log.error("Test execution failed: ", e);
         } finally {
-            logs = LogbackUtils.getLogs();
-            LogbackUtils.off();
+            logs = LogbackUtil.getLogs();
+            LogbackUtil.off();
         }
         return logs;
     }
@@ -106,7 +106,7 @@ public class TestScriptService {
         return null;
     }
 
-    private List<Statement> collectStatementResults(Long testRecordId, Context context) {
+    private List<Statement> collectStatementResults(Long testRecordId, MobileContext mobileContext) {
         List<Statement> statements = new ArrayList<>();
 
         // 模拟收集语句执行结果
