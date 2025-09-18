@@ -1,6 +1,7 @@
-package org.example.server.engine.groovy;
+package org.example.server.engine.step.script;
 
 import lombok.extern.slf4j.Slf4j;
+import org.example.server.engine.MobileContext;
 
 @Slf4j
 public class DefaultInterceptor implements Interceptor {

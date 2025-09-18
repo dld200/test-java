@@ -21,6 +21,6 @@ public class StepFactory {
             throw new IllegalArgumentException("Unknown step type: " + type);
         }
         // 反序列化配置，生成具体 Step
-        return JSON.parseObject(context.replaceVariables(configJson), clazz);
+        return JSON.parseObject(context.resolve(configJson), clazz);
     }
 }

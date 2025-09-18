@@ -2,8 +2,8 @@
 //
 //import org.example.common.domain.TestCase;
 //import org.example.mobile.automation.IosSimulatorAutomation;
-//import org.example.server.engine.groovy.MobileContext;
-//import org.example.server.engine.groovy.DefaultInterceptor;
+//import org.example.server.engine.MobileContext;
+//import org.example.server.engine.step.groovy.DefaultInterceptor;
 //import org.example.server.engine.groovy.Executor;
 //
 //import java.util.HashMap;

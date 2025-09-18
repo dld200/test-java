@@ -1,40 +1,49 @@
 package org.example.server.engine;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import lombok.Data;
+import org.example.mobile.automation.Automation;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Data
 public class ExecuteContext {
-    private Map<String, String> variables = new HashMap<>();
 
-    public void setVariable(String key, String value) {
-        variables.put(key, value);
-    }
+    private MobileContext mobileContext;
 
-    public String getVariable(String key) {
-        return variables.get(key);
-    }
+    private Map<Long, String> stepResults = new HashMap<>();
 
-    public boolean containsVariable(String key) {
-        return variables.containsKey(key);
-    }
+    private Map<String, Object> runtimeVariables = new HashMap<String, Object>();
 
-    public String replaceVariables(String text) {
-        if (text == null) {
+    public String resolve(String expression) {
+        if (expression == null) {
             return null;
         }
-
-        String result = text;
-        for (Map.Entry<String, String> entry : variables.entrySet()) {
+        String result = expression;
+        for (Map.Entry<String, Object> entry : runtimeVariables.entrySet()) {
             String placeholder = "${" + entry.getKey() + "}";
-            result = result.replace(placeholder, entry.getValue());
+            result = result.replace(placeholder, entry.getValue().toString());
         }
         return result;
     }
 
-    public void addStepResult(Long id, String result) {
-
+    //保存结果，给后续引用
+    public void setStepResult(Long id, String result) {
+        stepResults.put(id, result);
+        //如果是json，解析出来放入runtimeVariables
+        if (result != null && result.startsWith("{")) {
+            Map<String, Object> map = JSON.parseObject(result, new TypeReference<>() {
+            });
+            for (Map.Entry<String, Object> entry : map.entrySet()) {
+                if (runtimeVariables.containsKey(entry.getKey())) {
+                    //直接覆盖
+                    runtimeVariables.put(entry.getKey(), entry.getValue());
+                } else {
+                    runtimeVariables.put("Step" + id + ".output." + entry.getKey(), entry.getValue());
+                }
+            }
+        }
     }
 }

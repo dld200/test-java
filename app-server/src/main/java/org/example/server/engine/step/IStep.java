@@ -5,7 +5,7 @@ import org.example.server.engine.ExecuteContext;
 
 public interface IStep {
 
-     String getType();
+    String getName();
 
-      void execute(TestStep testStep, ExecuteContext context);
+    String execute(TestStep testStep, ExecuteContext context);
 }

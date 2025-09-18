@@ -1,24 +1,24 @@
 package org.example.mobile.automation;
 
-import org.example.common.domain.Device;
+import org.example.common.domain.TestDevice;
 
 import java.util.List;
 
 public interface Automation {
 
-    public List<Device> listDevices();
+    public List<TestDevice> listDevices();
 
 //    void init(Map<String, Object> options);
 
-    void setup(String deviceId, String bundleId);
+    boolean setup(String deviceId, String bundleId);
 
     String source();
 
-    void click(String elementId);
+    boolean click(String elementId);
 
-    void input(String elementId, String text);
+    boolean input(String elementId, String text);
 
     Object screenshot(String fileName);
 
-    void swipe(String direction);
+    boolean swipe(String direction);
 }

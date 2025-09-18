@@ -4,7 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.extern.slf4j.Slf4j;
-import org.example.common.domain.Device;
+import org.example.common.domain.TestDevice;
 import org.example.mobile.util.HttpUtil;
 import org.example.mobile.util.WDAUtil;
 import org.springframework.util.StringUtils;
@@ -34,14 +34,14 @@ public class IosSimulatorAutomation implements Automation {
     }
 
     @Override
-    public void click(String name) {
+    public boolean click(String name) {
         String elementId = findElement("id", name);
         Element e = getElementRect(elementId);
         tap(e.getX() + e.getWidth() / 2, e.getY() + e.getHeight() / 2);
     }
 
     @Override
-    public void input(String name, String text) {
+    public boolean input(String name, String text) {
         ensureSession();
         String elementId = findElement("id", name);
         String body = String.format("{\"value\":[\"%s\"]}", text);
@@ -69,7 +69,7 @@ public class IosSimulatorAutomation implements Automation {
     }
 
     @Override
-    public void swipe(String direction) {
+    public boolean swipe(String direction) {
         switch (direction) {
             case "left":
                 swipe(0, 200, 400, 200, 0.1f);
@@ -85,18 +85,19 @@ public class IosSimulatorAutomation implements Automation {
             default:
                 break;
         }
+        return true;
     }
 
     @Override
-    public List<Device> listDevices() {
+    public List<TestDevice> listDevices() {
         return List.of();
     }
 
     @Override
-    public void setup(String deviceId, String bundleId) {
+    public boolean setup(String deviceId, String bundleId) {
         //check session
         if (isWDARunning() && sessionId != null) {
-            return;
+            return true;
         } else {
             WDAUtil.runCommand("xcrun simctl launch " + deviceId + " xx.facebook.WebDriverAgentRunner");
             createSession(bundleId);
@@ -144,16 +145,16 @@ public class IosSimulatorAutomation implements Automation {
     /**
      * 等待 WDA 启动
      */
-    private void waitForWDA() {
+    private boolean waitForWDA() {
         int retries = 30;
         while (retries-- > 0) {
-            if (isWDARunning()) return;
+            if (isWDARunning()) return true;
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException ignored) {
             }
         }
-        throw new RuntimeException("WDA did not start in time");
+        return false;
     }
 
     private void createSession(String bundleId) {

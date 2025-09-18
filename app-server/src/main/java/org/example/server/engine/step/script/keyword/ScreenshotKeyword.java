@@ -1,8 +1,7 @@
-package org.example.server.engine.groovy.keyword;
+package org.example.server.engine.step.script.keyword;
 
 import lombok.extern.slf4j.Slf4j;
-import org.example.server.engine.groovy.MobileContext;
-import org.example.server.engine.groovy.Keyword;
+import org.example.mobile.automation.Automation;
 
 @Slf4j
 public class ScreenshotKeyword implements Keyword {
@@ -12,13 +11,12 @@ public class ScreenshotKeyword implements Keyword {
     }
 
     @Override
-    public Object execute(MobileContext mobileContext, Object... args) {
+    public Object execute(Automation automation, Object... args) {
         String name = "screenshot";
         if (args.length > 0) {
             name = args[0].toString();
         }
         log.info("Taking screenshot: {}", name);
-        mobileContext.getAutomation().screenshot(name);
-        return null;
+        return automation.screenshot(name);
     }
 }

@@ -1,4 +1,6 @@
-package org.example.server.engine.groovy;
+package org.example.server.engine.step.script;
+
+import org.example.server.engine.MobileContext;
 
 public interface Interceptor {
 

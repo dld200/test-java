@@ -19,19 +19,17 @@ public class HttpStep implements IStep {
     private Map<String, String> headers;
     private String body;
 
-
-    // 静态代码块自动注册
     static {
         StepFactory.registerStep("http", SqlStep.class);
     }
 
     @Override
-    public String getType() {
+    public String getName() {
         return "http";
     }
 
     @Override
-    public void execute(TestStep testStep, ExecuteContext context) {
+    public String execute(TestStep testStep, ExecuteContext context) {
 
         RestTemplate restTemplate = new RestTemplate();
 
@@ -59,6 +57,7 @@ public class HttpStep implements IStep {
         );
 
         String result = response.getBody();
-        context.addStepResult(testStep.getId(), result);
+        context.setStepResult(testStep.getId(), result);
+        return result;
     }
 }

@@ -1,19 +1,25 @@
-package org.example.server.engine.groovy;
+package org.example.server.engine;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import org.example.common.domain.Device;
+import lombok.NoArgsConstructor;
+import org.example.common.domain.TestDevice;
 import org.example.common.domain.TestCase;
 import org.example.mobile.automation.Automation;
 
 import java.util.Map;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class MobileContext {
     private TestCase testCase;
     private Map<String, Object> options;
     private Map<String, Object> variables;
     private Object result;
-    private Device device;
+    private TestDevice testDevice;
     private String deviceId;
     private String bundleId;
     private Automation automation;

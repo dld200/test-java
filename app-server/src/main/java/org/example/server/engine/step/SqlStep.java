@@ -12,18 +12,19 @@ public class SqlStep implements IStep {
     private JdbcTemplate jdbcTemplate;
 
     private String database;
-    private String text;
+
+    private String sql;
 
     @Override
-    public String getType() {
+    public String getName() {
         return "sql";
     }
 
     @Override
-    public void execute(TestStep testStep, ExecuteContext context) {
-        String resolvedSql = context.replaceVariables(text);
-        String result = "Executed SQL: " + resolvedSql + " on database: " + database;
-        context.addStepResult(testStep.getId(), result);
+    public String execute(TestStep testStep, ExecuteContext context) {
+        String result = "Executed SQL: " + sql + " on database: " + database;
+        context.setStepResult(testStep.getId(), result);
+        return result;
     }
 
     // 静态代码块自动注册
