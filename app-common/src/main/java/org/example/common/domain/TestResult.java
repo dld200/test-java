@@ -32,8 +32,8 @@ public class TestResult {
 
     private String errorMessage;
 
-    @Transient
-    private List<Statement> statements;
+//    @Transient
+//    private List<Statement> statements;
 
     private Date createTime;
 

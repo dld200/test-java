@@ -1,9 +1,6 @@
 package org.example.server.service;
 
 import jakarta.annotation.PostConstruct;
-import org.example.common.domain.PageModel;
-import org.example.server.dto.ModelReq;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,26 +16,25 @@ import java.util.UUID;
 @Service
 public class FileService {
 
-    @Value("${image.upload.dir:/Users/snap/workspace/app-agent/uploads}")
+    @Value("${server.upload-dir}")
     private String uploadDir;
 
     @PostConstruct
     public void init() {
-        // 确保上传目录存在
         File directory = new File(uploadDir);
         if (!directory.exists()) {
             directory.mkdirs();
         }
     }
 
-    public String saveImage(MultipartFile file) throws IOException {
-        Path filePath = Paths.get(uploadDir, UUID.randomUUID().toString(), file.getOriginalFilename());
+    public String saveFile(MultipartFile file) throws IOException {
+        String uuid = UUID.randomUUID().toString();
+        Path filePath = Paths.get(uploadDir, uuid, file.getOriginalFilename());
         Files.write(filePath, file.getBytes());
-        return filePath.toString();
+        return uuid;
     }
 
     public String saveFile(File file) throws IOException {
-        //保存到uuid目录下
         String uuid = UUID.randomUUID().toString();
         Path filePath = Paths.get(uploadDir, uuid, file.getName());
         Files.createDirectories(filePath.getParent());
@@ -60,22 +56,5 @@ public class FileService {
             }
         }
         return null;
-    }
-
-    /**
-     * 将PageModel转换为ModelReq
-     *
-     * @param pageModel PageModel对象
-     * @return ModelReq对象
-     */
-    private ModelReq convertToReq(PageModel pageModel) {
-        ModelReq req = new ModelReq();
-        req.setName(pageModel.getName());
-        req.setXml(pageModel.getXml());
-        req.setJson(pageModel.getJson());
-        req.setHtml(pageModel.getHtml());
-        req.setScreenshot(pageModel.getScreenshot());
-        req.setSummary(pageModel.getSummary());
-        return req;
     }
 }

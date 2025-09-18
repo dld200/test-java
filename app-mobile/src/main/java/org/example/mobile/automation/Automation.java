@@ -1,9 +1,12 @@
-package org.example.mobile.device;
+package org.example.mobile.automation;
 
-/**
- * 自动化接口
- */
+import org.example.common.domain.Device;
+
+import java.util.List;
+
 public interface Automation {
+
+    public List<Device> listDevices();
 
 //    void init(Map<String, Object> options);
 

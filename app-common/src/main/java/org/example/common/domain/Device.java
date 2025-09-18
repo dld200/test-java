@@ -14,7 +14,6 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "device")
 public class Device {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,6 +26,9 @@ public class Device {
     private String uuid;
 
     private String status;
+
+    //设备附加信息
+    private String info;
 
     private Date createTime;
 

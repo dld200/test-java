@@ -1,5 +1,8 @@
 package org.example.mobile.app;
 
+import org.example.mobile.graph.AppGraph;
+import org.example.mobile.graph.Element;
+import org.example.mobile.graph.PageNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;

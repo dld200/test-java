@@ -3,7 +3,7 @@ package org.example.server.engine.groovy;
 import lombok.Data;
 import org.example.common.domain.Device;
 import org.example.common.domain.TestCase;
-import org.example.mobile.device.Automation;
+import org.example.mobile.automation.Automation;
 
 import java.util.Map;
 

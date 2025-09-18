@@ -1,10 +1,10 @@
-package org.example.mobile.wda;
+package org.example.mobile.source;
 
-import org.example.common.model.UIElement;
+import org.example.mobile.automation.Element;
 
-public class UIElementHtmlRenderer {
+public class UIElementHtmlSerializer {
 
-    public static String toHtml(UIElement root, float scale) {
+    public static String toHtml(Element root, float scale) {
         StringBuilder sb = new StringBuilder();
         sb.append("<!DOCTYPE html>\n<html>\n<head>\n")
           .append("<meta charset=\"UTF-8\">\n")
@@ -35,7 +35,7 @@ public class UIElementHtmlRenderer {
         return sb.toString();
     }
 
-    private static void appendElement(StringBuilder sb, UIElement node, float scale) {
+    private static void appendElement(StringBuilder sb, Element node, float scale) {
         if (node == null) return;
 
         float left = node.x * scale;
@@ -61,7 +61,7 @@ public class UIElementHtmlRenderer {
         sb.append("</div>\n");
 
         // 递归子元素
-        for (UIElement child : node.children) {
+        for (Element child : node.children) {
             appendElement(sb, child, scale);
         }
     }

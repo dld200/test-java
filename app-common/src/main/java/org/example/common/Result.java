@@ -1,4 +1,4 @@
-package org.example.common.dto;
+package org.example.common;
 
 /**
  * HTTP响应结果包装类

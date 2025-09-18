@@ -1,4 +1,4 @@
-package org.example.mobile.app;
+package org.example.mobile.graph;
 
 class TransitionEdge {
     String from;

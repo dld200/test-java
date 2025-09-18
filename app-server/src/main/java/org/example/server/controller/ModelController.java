@@ -1,8 +1,7 @@
 package org.example.server.controller;
 
 import org.example.common.domain.PageModel;
-import org.example.common.dto.Result;
-import org.example.server.dto.ModelReq;
+import org.example.common.Result;
 import org.example.server.service.ModelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

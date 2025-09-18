@@ -17,7 +17,7 @@ public class ExecuteService {
     public void execute(TestCase testCase) {
         // 创建执行上下文
         ExecuteContext context = new ExecuteContext();
-        Map<String, String> variables = JSON.parseObject(testCase.getConfig(), new TypeReference<>() {
+        Map<String, String> variables = JSON.parseObject(testCase.getParams(), new TypeReference<>() {
         });
 
         // 将TestCase的variables放入执行上下文

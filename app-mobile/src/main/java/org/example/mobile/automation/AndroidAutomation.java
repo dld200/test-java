@@ -1,6 +1,6 @@
 //package org.example.mobile.device.impl;
 //
-//import org.example.mobile.device.Automation;
+//import org.example.mobile.device.impl.Automation;
 //import lombok.extern.slf4j.Slf4j;
 //
 //import java.util.Map;

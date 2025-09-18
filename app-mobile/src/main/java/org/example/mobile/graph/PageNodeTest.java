@@ -1,4 +1,4 @@
-package org.example.mobile.app;
+package org.example.mobile.graph;
 
 public class PageNodeTest {
     public static void main(String[] args) {

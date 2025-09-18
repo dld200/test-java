@@ -1,19 +1,19 @@
-package org.example.mobile.device.impl;
+package org.example.mobile.automation;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.extern.slf4j.Slf4j;
-import org.example.mobile.automation.Element;
-import org.example.mobile.automation.HttpUtils;
-import org.example.mobile.automation.XCUITestUtils;
-import org.example.mobile.device.Automation;
+import org.example.common.domain.Device;
+import org.example.mobile.util.HttpUtil;
+import org.example.mobile.util.WDAUtil;
 import org.springframework.util.StringUtils;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.List;
 
 @Slf4j
 public class IosSimulatorAutomation implements Automation {
@@ -25,7 +25,7 @@ public class IosSimulatorAutomation implements Automation {
 
     @Override
     public String source() {
-        String res = HttpUtils.sendGet(WDA_URL + "/session/" + sessionId + "/source");
+        String res = HttpUtil.sendGet(WDA_URL + "/session/" + sessionId + "/source");
         JsonObject json = JsonParser.parseString(res).getAsJsonObject();
         if (json.has("value")) {
             return json.get("value").getAsString();
@@ -45,13 +45,13 @@ public class IosSimulatorAutomation implements Automation {
         ensureSession();
         String elementId = findElement("id", name);
         String body = String.format("{\"value\":[\"%s\"]}", text);
-        HttpUtils.sendPost(WDA_URL + "/session/" + sessionId + "/element/" + elementId + "/value", body);
+        HttpUtil.sendPost(WDA_URL + "/session/" + sessionId + "/element/" + elementId + "/value", body);
     }
 
     @Override
     public Object screenshot(String fileName) {
         ensureSession();
-        String res = HttpUtils.sendGet(WDA_URL + "/session/" + sessionId + "/screenshot");
+        String res = HttpUtil.sendGet(WDA_URL + "/session/" + sessionId + "/screenshot");
         JsonObject json = JsonParser.parseString(res).getAsJsonObject();
         //base64 to image
         byte[] imageBytes = Base64.getDecoder().decode(json.get("value").getAsString());
@@ -88,12 +88,17 @@ public class IosSimulatorAutomation implements Automation {
     }
 
     @Override
+    public List<Device> listDevices() {
+        return List.of();
+    }
+
+    @Override
     public void setup(String deviceId, String bundleId) {
         //check session
         if (isWDARunning() && sessionId != null) {
             return;
         } else {
-            XCUITestUtils.runCommand("xcrun simctl launch " + deviceId + " xx.facebook.WebDriverAgentRunner");
+            WDAUtil.runCommand("xcrun simctl launch " + deviceId + " xx.facebook.WebDriverAgentRunner");
             createSession(bundleId);
         }
         waitForWDA();
@@ -127,7 +132,7 @@ public class IosSimulatorAutomation implements Automation {
      */
     private boolean isWDARunning() {
         try {
-            String res = HttpUtils.sendGet(WDA_URL + "/status");
+            String res = HttpUtil.sendGet(WDA_URL + "/status");
             JsonObject json = JsonParser.parseString(res).getAsJsonObject();
             sessionId = json.get("sessionId").getAsString();
             return res.contains("success");
@@ -153,7 +158,7 @@ public class IosSimulatorAutomation implements Automation {
 
     private void createSession(String bundleId) {
         String body = String.format("{\"capabilities\":{\"alwaysMatch\":{\"platformName\":\"iOS\",\"bundleId\":\"%s\"}}}", bundleId);
-        String res = HttpUtils.sendPost(WDA_URL + "/session", body);
+        String res = HttpUtil.sendPost(WDA_URL + "/session", body);
 
         JsonObject json = JsonParser.parseString(res).getAsJsonObject();
         JsonObject value = json.getAsJsonObject("value");
@@ -176,7 +181,7 @@ public class IosSimulatorAutomation implements Automation {
     private String findElement(String using, String value) {
         ensureSession();
         String body = String.format("{\"using\":\"%s\",\"value\":\"%s\"}", using, value);
-        String res = HttpUtils.sendPost(WDA_URL + "/session/" + sessionId + "/elements", body);
+        String res = HttpUtil.sendPost(WDA_URL + "/session/" + sessionId + "/elements", body);
 
         JsonObject json = JsonParser.parseString(res).getAsJsonObject();
         if (json.has("value")) {
@@ -196,7 +201,7 @@ public class IosSimulatorAutomation implements Automation {
      */
     private Object getElementAttribute(String attr, String elementId) {
         ensureSession();
-        String res = HttpUtils.sendGet(WDA_URL + "/session/" + sessionId + "/element/" + elementId + "/attribute/" + attr);
+        String res = HttpUtil.sendGet(WDA_URL + "/session/" + sessionId + "/element/" + elementId + "/attribute/" + attr);
         JsonObject json = JsonParser.parseString(res).getAsJsonObject();
         return json.get("value");
     }
@@ -206,13 +211,12 @@ public class IosSimulatorAutomation implements Automation {
      */
     private Element getElementRect(String elementId) {
         ensureSession();
-        String res = HttpUtils.sendGet(WDA_URL + "/session/" + sessionId + "/element/" + elementId + "/rect");
+        String res = HttpUtil.sendGet(WDA_URL + "/session/" + sessionId + "/element/" + elementId + "/rect");
         JsonObject json = JsonParser.parseString(res).getAsJsonObject();
         return new Element(json.getAsJsonObject("value").get("x").getAsInt(),
                 json.getAsJsonObject("value").get("y").getAsInt(),
                 json.getAsJsonObject("value").get("width").getAsInt(),
-                json.getAsJsonObject("value").get("height").getAsInt(),
-                "");
+                json.getAsJsonObject("value").get("height").getAsInt());
     }
 
     private void pressButton(String buttonName) {
@@ -222,7 +226,7 @@ public class IosSimulatorAutomation implements Automation {
 //                "VOLUME_UP": "volumeup",
 //                "VOLUME_DOWN": "volumedown",
 //		};
-        HttpUtils.sendPost(WDA_URL + "/session/" + sessionId + "/wda/pressbutton", "{\"name\":\"" + buttonName + "\"}");
+        HttpUtil.sendPost(WDA_URL + "/session/" + sessionId + "/wda/pressbutton", "{\"name\":\"" + buttonName + "\"}");
     }
 
     /**
@@ -230,7 +234,7 @@ public class IosSimulatorAutomation implements Automation {
      */
     private String getText(String elementId) {
         ensureSession();
-        String res = HttpUtils.sendGet(WDA_URL + "/session/" + sessionId + "/element/" + elementId + "/text");
+        String res = HttpUtil.sendGet(WDA_URL + "/session/" + sessionId + "/element/" + elementId + "/text");
         JsonObject json = JsonParser.parseString(res).getAsJsonObject();
         return json.get("value").getAsString();
     }
@@ -241,7 +245,7 @@ public class IosSimulatorAutomation implements Automation {
     private void tap(int x, int y) {
         ensureSession();
         String body = String.format("{\"x\":%d,\"y\":%d}", x, y);
-        HttpUtils.sendPost(WDA_URL + "/session/" + sessionId + "/wda/tap", body);
+        HttpUtil.sendPost(WDA_URL + "/session/" + sessionId + "/wda/tap", body);
     }
 
     /**
@@ -251,6 +255,6 @@ public class IosSimulatorAutomation implements Automation {
         ensureSession();
         String body = String.format("{\"fromX\":%d,\"fromY\":%d,\"toX\":%d,\"toY\":%d,\"duration\":%s}",
                 startX, startY, endX, endY, seconds);
-        HttpUtils.sendPost(WDA_URL + "/session/" + sessionId + "/wda/dragfromtoforduration", body);
+        HttpUtil.sendPost(WDA_URL + "/session/" + sessionId + "/wda/dragfromtoforduration", body);
     }
 }

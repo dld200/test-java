@@ -29,9 +29,8 @@ public class TestCase {
 
     private String desc;
 
-    private String config;
-
-    private String script;
+    //参数
+    private String params;
 
     @OneToMany(mappedBy = "testCase", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<TestStep> steps;

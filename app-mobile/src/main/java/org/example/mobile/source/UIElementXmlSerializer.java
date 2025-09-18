@@ -1,16 +1,16 @@
-package org.example.mobile.wda;
+package org.example.mobile.source;
 
-import org.example.common.model.UIElement;
+import org.example.mobile.automation.Element;
 
 public class UIElementXmlSerializer {
 
-    public static String toXml(UIElement root) {
+    public static String toXml(Element root) {
         StringBuilder sb = new StringBuilder();
         appendNode(sb, root, 0);
         return sb.toString();
     }
 
-    private static void appendNode(StringBuilder sb, UIElement node, int depth) {
+    private static void appendNode(StringBuilder sb, Element node, int depth) {
         if (node == null) return;
 
         String indent = "  ".repeat(depth);
@@ -35,7 +35,7 @@ public class UIElementXmlSerializer {
             sb.append(">\n");
 
             // 递归子节点
-            for (UIElement child : node.children) {
+            for (Element child : node.children) {
                 appendNode(sb, child, depth + 1);
             }
 

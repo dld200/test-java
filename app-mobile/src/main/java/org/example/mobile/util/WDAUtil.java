@@ -1,15 +1,20 @@
-package org.example.mobile.automation;
+package org.example.mobile.util;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import lombok.extern.slf4j.Slf4j;
+import org.example.mobile.automation.Element;
 
+import java.io.BufferedReader;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.time.LocalDateTime;
 import java.util.Base64;
 
-public class WDAUtils {
+@Slf4j
+public class WDAUtil {
     private static String WDA_URL = "http://127.0.0.1:8100";
     private static String sessionId;
     private static String projectPath;
@@ -40,14 +45,14 @@ public class WDAUtils {
         if (isWDARunning() && sessionId != null) {
             return;
         } else {
-            XCUITestUtils.runCommand("xcrun simctl launch " + deviceId + " xx.facebook.WebDriverAgentRunner");
+            runCommand("xcrun simctl launch " + deviceId + " xx.facebook.WebDriverAgentRunner");
             createSession(bundleId);
         }
         waitForWDA();
     }
 
     public static void launchWDA(String deviceId, String bundleId, String sessionId) {
-        WDAUtils.sessionId = sessionId;
+        WDAUtil.sessionId = sessionId;
     }
 
 
@@ -56,7 +61,7 @@ public class WDAUtils {
      */
     public static boolean isWDARunning() {
         try {
-            String res = HttpUtils.sendGet(WDA_URL + "/status");
+            String res = HttpUtil.sendGet(WDA_URL + "/status");
             JsonObject json = JsonParser.parseString(res).getAsJsonObject();
             sessionId = json.get("sessionId").getAsString();
             return res.contains("success");
@@ -85,7 +90,7 @@ public class WDAUtils {
      */
     public static void createSession(String bundleId) {
         String body = String.format("{\"capabilities\":{\"alwaysMatch\":{\"platformName\":\"iOS\",\"bundleId\":\"%s\"}}}", bundleId);
-        String res = HttpUtils.sendPost(WDA_URL + "/session", body);
+        String res = HttpUtil.sendPost(WDA_URL + "/session", body);
 
         JsonObject json = JsonParser.parseString(res).getAsJsonObject();
         JsonObject value = json.getAsJsonObject("value");
@@ -102,7 +107,7 @@ public class WDAUtils {
     public static String findElement(String using, String value) {
         ensureSession();
         String body = String.format("{\"using\":\"%s\",\"value\":\"%s\"}", using, value);
-        String res = HttpUtils.sendPost(WDA_URL + "/session/" + sessionId + "/elements", body);
+        String res = HttpUtil.sendPost(WDA_URL + "/session/" + sessionId + "/elements", body);
 
         JsonObject json = JsonParser.parseString(res).getAsJsonObject();
         if (json.has("value")) {
@@ -121,7 +126,7 @@ public class WDAUtils {
      * 获取页面元素树
      */
     public static String getPageSource() {
-        String res = HttpUtils.sendGet(WDA_URL + "/session/" + sessionId + "/source");
+        String res = HttpUtil.sendGet(WDA_URL + "/session/" + sessionId + "/source");
         JsonObject json = JsonParser.parseString(res).getAsJsonObject();
         if (json.has("value")) {
             return json.get("value").getAsString();
@@ -135,7 +140,7 @@ public class WDAUtils {
      */
     public static Object getElementAttribute(String attr, String elementId) {
         ensureSession();
-        String res = HttpUtils.sendGet(WDA_URL + "/session/" + sessionId + "/element/" + elementId + "/attribute/" + attr);
+        String res = HttpUtil.sendGet(WDA_URL + "/session/" + sessionId + "/element/" + elementId + "/attribute/" + attr);
         JsonObject json = JsonParser.parseString(res).getAsJsonObject();
         return json.get("value");
     }
@@ -145,13 +150,12 @@ public class WDAUtils {
      */
     public static Element getElementRect(String elementId) {
         ensureSession();
-        String res = HttpUtils.sendGet(WDA_URL + "/session/" + sessionId + "/element/" + elementId + "/rect");
+        String res = HttpUtil.sendGet(WDA_URL + "/session/" + sessionId + "/element/" + elementId + "/rect");
         JsonObject json = JsonParser.parseString(res).getAsJsonObject();
         return new Element(json.getAsJsonObject("value").get("x").getAsInt(),
                 json.getAsJsonObject("value").get("y").getAsInt(),
                 json.getAsJsonObject("value").get("width").getAsInt(),
-                json.getAsJsonObject("value").get("height").getAsInt(),
-                "");
+                json.getAsJsonObject("value").get("height").getAsInt());
     }
 
     /**
@@ -160,7 +164,7 @@ public class WDAUtils {
     public static void clickElement(String elementId) {
         ensureSession();
         Element e = getElementRect(elementId);
-        WDAUtils.tap(e.getX() + e.getWidth() / 2, e.getY() + e.getHeight() / 2);
+        WDAUtil.tap(e.getX() + e.getWidth() / 2, e.getY() + e.getHeight() / 2);
 //        HttpUtils.sendPost(WDA_URL + "/session/" + sessionId + "/element/" + elementId + "/click", "{}");
     }
 
@@ -170,7 +174,7 @@ public class WDAUtils {
     public static void sendKeys(String elementId, String text) {
         ensureSession();
         String body = String.format("{\"value\":[\"%s\"]}", text);
-        HttpUtils.sendPost(WDA_URL + "/session/" + sessionId + "/element/" + elementId + "/value", body);
+        HttpUtil.sendPost(WDA_URL + "/session/" + sessionId + "/element/" + elementId + "/value", body);
     }
 
     public static void pressButton(String buttonName) {
@@ -180,7 +184,7 @@ public class WDAUtils {
 //                "VOLUME_UP": "volumeup",
 //                "VOLUME_DOWN": "volumedown",
 //		};
-        HttpUtils.sendPost(WDA_URL + "/session/" + sessionId + "/wda/pressbutton", "{\"name\":\"" + buttonName + "\"}");
+        HttpUtil.sendPost(WDA_URL + "/session/" + sessionId + "/wda/pressbutton", "{\"name\":\"" + buttonName + "\"}");
     }
 
     /**
@@ -188,7 +192,7 @@ public class WDAUtils {
      */
     public static String getText(String elementId) {
         ensureSession();
-        String res = HttpUtils.sendGet(WDA_URL + "/session/" + sessionId + "/element/" + elementId + "/text");
+        String res = HttpUtil.sendGet(WDA_URL + "/session/" + sessionId + "/element/" + elementId + "/text");
         JsonObject json = JsonParser.parseString(res).getAsJsonObject();
         return json.get("value").getAsString();
     }
@@ -199,7 +203,7 @@ public class WDAUtils {
     public static void tap(int x, int y) {
         ensureSession();
         String body = String.format("{\"x\":%d,\"y\":%d}", x, y);
-        HttpUtils.sendPost(WDA_URL + "/session/" + sessionId + "/wda/tap", body);
+        HttpUtil.sendPost(WDA_URL + "/session/" + sessionId + "/wda/tap", body);
     }
 
     /**
@@ -209,7 +213,7 @@ public class WDAUtils {
         ensureSession();
         String body = String.format("{\"fromX\":%d,\"fromY\":%d,\"toX\":%d,\"toY\":%d,\"duration\":%s}",
                 startX, startY, endX, endY, seconds);
-        HttpUtils.sendPost(WDA_URL + "/session/" + sessionId + "/wda/dragfromtoforduration", body);
+        HttpUtil.sendPost(WDA_URL + "/session/" + sessionId + "/wda/dragfromtoforduration", body);
     }
 
     /**
@@ -217,7 +221,7 @@ public class WDAUtils {
      */
     public static String screenshot() {
         ensureSession();
-        String res = HttpUtils.sendGet(WDA_URL + "/session/" + sessionId + "/screenshot");
+        String res = HttpUtil.sendGet(WDA_URL + "/session/" + sessionId + "/screenshot");
         JsonObject json = JsonParser.parseString(res).getAsJsonObject();
 
         //base64 to image
@@ -242,19 +246,35 @@ public class WDAUtils {
     public static void swipe(String direction) {
         switch (direction) {
             case "left":
-                WDAUtils.swipe(0, 200, 400, 200, 0.01f);
+                WDAUtil.swipe(0, 200, 400, 200, 0.01f);
                 break;
             case "right":
-                WDAUtils.swipe(400, 200, 0, 200, 0.01f);
+                WDAUtil.swipe(400, 200, 0, 200, 0.01f);
                 break;
             case "up":
-                WDAUtils.swipe(50, 500, 50, 20, 0.01f);
+                WDAUtil.swipe(50, 500, 50, 20, 0.01f);
                 break;
             case "down":
                 break;
             default:
                 break;
         }
+    }
+
+    public static String runCommand(String cmd) {
+        StringBuilder sb = new StringBuilder();
+        try {
+            Process process = Runtime.getRuntime().exec(new String[]{"/bin/sh", "-c", cmd});
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line).append("\n");
+            }
+            process.waitFor();
+        } catch (Exception e) {
+            log.info("Error running command: " + e.getMessage());
+        }
+        return sb.toString();
     }
 
 }

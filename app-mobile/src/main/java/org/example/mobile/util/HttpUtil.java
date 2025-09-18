@@ -1,4 +1,4 @@
-package org.example.mobile.automation;
+package org.example.mobile.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
@@ -13,7 +13,7 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 
 @Slf4j
-public class HttpUtils {
+public class HttpUtil {
     public static String sendPost(String url, String body) {
         log.info("Post request: {}, {}", url, body);
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {

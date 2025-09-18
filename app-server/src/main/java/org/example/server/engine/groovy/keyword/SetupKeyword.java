@@ -1,8 +1,8 @@
 package org.example.server.engine.groovy.keyword;
 
 import lombok.extern.slf4j.Slf4j;
-import org.example.mobile.device.Automation;
-import org.example.mobile.device.impl.IosSimulatorAutomation;
+import org.example.mobile.automation.Automation;
+import org.example.mobile.automation.IosSimulatorAutomation;
 import org.example.server.engine.groovy.MobileContext;
 import org.example.server.engine.groovy.Keyword;
 

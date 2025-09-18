@@ -1,7 +1,7 @@
 package org.example.server.controller;
 
 import org.example.common.domain.TestCase;
-import org.example.common.dto.Result;
+import org.example.common.Result;
 import org.example.server.service.TestCaseService;
 import org.example.server.service.TestStepService;
 import org.springframework.beans.factory.annotation.Autowired;

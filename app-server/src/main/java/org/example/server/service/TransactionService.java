@@ -2,7 +2,7 @@ package org.example.server.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.server.dao.TransactionDao;
-import org.example.common.domain.Transaction;
+import org.example.common.domain.Record;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,19 +16,19 @@ public class TransactionService {
     @Autowired
     private TransactionDao transactionDao;
 
-    public void save(Transaction transaction) {
-        transaction.setCreateTime(new Date());
-        transaction.setUpdateTime(new Date());
-        transactionDao.save(transaction);
+    public void save(Record record) {
+        record.setCreateTime(new Date());
+        record.setUpdateTime(new Date());
+        transactionDao.save(record);
     }
 
-    public Transaction find(String url, String request) {
+    public Record find(String url, String request) {
         // 使用JPA的方式进行查询
-        List<Transaction> transactions = transactionDao.findByUrlAndRequest(url, request);
-        return transactions.isEmpty() ? null : transactions.get(0);
+        List<Record> records = transactionDao.findByUrlAndRequest(url, request);
+        return records.isEmpty() ? null : records.get(0);
     }
 
-    public List<Transaction> getAllTransactions() {
+    public List<Record> getAllTransactions() {
         return transactionDao.findAll();
     }
 

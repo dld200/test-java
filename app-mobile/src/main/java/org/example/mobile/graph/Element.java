@@ -1,4 +1,4 @@
-package org.example.mobile.app;
+package org.example.mobile.graph;
 
 /**
  * 页面元素类，表示页面上的一个组件

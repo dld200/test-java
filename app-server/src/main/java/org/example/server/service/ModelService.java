@@ -3,12 +3,12 @@ package org.example.server.service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import org.example.common.domain.PageModel;
-import org.example.common.model.UIElement;
-import org.example.mobile.device.Automation;
-import org.example.mobile.device.impl.IosSimulatorAutomation;
-import org.example.mobile.wda.UIElementHtmlRenderer;
-import org.example.mobile.wda.UIElementXmlSerializer;
-import org.example.mobile.wda.WdaCleanTreeBuilder;
+import org.example.mobile.source.WdaSourceParser;
+import org.example.mobile.automation.Element;
+import org.example.mobile.automation.Automation;
+import org.example.mobile.automation.IosSimulatorAutomation;
+import org.example.mobile.source.UIElementHtmlSerializer;
+import org.example.mobile.source.UIElementXmlSerializer;
 import org.example.server.dao.PageModelDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,10 +61,10 @@ public class ModelService {
         }
         String file = fileService.saveFile(new File("/Users/snap/workspace/app-agent/uploads/xxxx.png"));
         String source = automation.source();
-        UIElement cleanTree = WdaCleanTreeBuilder.parseAndClean(source);
+        Element cleanTree = WdaSourceParser.parseAndClean(source);
         String json = JSON.toJSONString(cleanTree, SerializerFeature.SortField, SerializerFeature.PrettyFormat);
         String xml = UIElementXmlSerializer.toXml(cleanTree);
-        String html = UIElementHtmlRenderer.toHtml(cleanTree, 1.0f);
+        String html = UIElementHtmlSerializer.toHtml(cleanTree, 1.0f);
 
         PageModel pageModel = new PageModel();
         pageModel.setName("New Model");

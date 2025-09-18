@@ -20,7 +20,7 @@ public class FileController {
     @PostMapping("/upload")
     public String uploadFile(@RequestParam("file") MultipartFile file) {
         try {
-            return fileService.saveImage(file);
+            return fileService.saveFile(file);
         } catch (IOException e) {
             return "图片上传失败: " + e.getMessage();
         }
