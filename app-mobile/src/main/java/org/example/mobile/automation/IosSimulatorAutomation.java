@@ -34,18 +34,18 @@ public class IosSimulatorAutomation implements Automation {
     }
 
     @Override
-    public boolean click(String name) {
+    public String click(String name) {
         String elementId = findElement("id", name);
         Element e = getElementRect(elementId);
-        tap(e.getX() + e.getWidth() / 2, e.getY() + e.getHeight() / 2);
+        return tap(e.getX() + e.getWidth() / 2, e.getY() + e.getHeight() / 2);
     }
 
     @Override
-    public boolean input(String name, String text) {
+    public String input(String name, String text) {
         ensureSession();
         String elementId = findElement("id", name);
         String body = String.format("{\"value\":[\"%s\"]}", text);
-        HttpUtil.sendPost(WDA_URL + "/session/" + sessionId + "/element/" + elementId + "/value", body);
+        return HttpUtil.sendPost(WDA_URL + "/session/" + sessionId + "/element/" + elementId + "/value", body);
     }
 
     @Override
@@ -102,7 +102,7 @@ public class IosSimulatorAutomation implements Automation {
             WDAUtil.runCommand("xcrun simctl launch " + deviceId + " xx.facebook.WebDriverAgentRunner");
             createSession(bundleId);
         }
-        waitForWDA();
+        return waitForWDA();
     }
 
     /**
@@ -243,10 +243,10 @@ public class IosSimulatorAutomation implements Automation {
     /**
      * 点击坐标
      */
-    private void tap(int x, int y) {
+    private String tap(int x, int y) {
         ensureSession();
         String body = String.format("{\"x\":%d,\"y\":%d}", x, y);
-        HttpUtil.sendPost(WDA_URL + "/session/" + sessionId + "/wda/tap", body);
+        return HttpUtil.sendPost(WDA_URL + "/session/" + sessionId + "/wda/tap", body);
     }
 
     /**

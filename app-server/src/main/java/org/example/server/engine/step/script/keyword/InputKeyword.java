@@ -2,6 +2,7 @@ package org.example.server.engine.step.script.keyword;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.mobile.automation.Automation;
+import org.example.server.engine.MobileContext;
 
 @Slf4j
 public class InputKeyword implements Keyword {
@@ -11,13 +12,12 @@ public class InputKeyword implements Keyword {
     }
 
     @Override
-    public Object execute(Automation automation, Object... args) {
-        if (args.length < 2) {
-            throw new IllegalArgumentException("input keyword requires element identifier and text");
+    public Object execute(MobileContext context, Object... args) {
+        if (args.length != 2) {
+            throw new IllegalArgumentException();
         }
         String element = args[0].toString();
         String text = args[1].toString();
-        log.info("Inputting '{}' into element: {}", text, element);
-        return automation.input(element, text);
+        return context.getAutomation().input(element, text);
     }
 }

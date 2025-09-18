@@ -14,9 +14,9 @@ public interface Automation {
 
     String source();
 
-    boolean click(String elementId);
+    String click(String elementId);
 
-    boolean input(String elementId, String text);
+    String input(String elementId, String text);
 
     Object screenshot(String fileName);
 

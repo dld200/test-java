@@ -1,13 +1,14 @@
 package org.example.server.controller;
 
-import org.example.common.domain.TestCase;
 import org.example.common.Result;
+import org.example.common.domain.TestCase;
 import org.example.server.service.TestCaseService;
 import org.example.server.service.TestStepService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/test-cases")
@@ -41,7 +42,7 @@ public class TestApiController {
     }
 
     @PostMapping("{id}/run")
-    public Result<String> runTestCase(@PathVariable Long id) {
-        return Result.success(testCaseService.execute(id));
+    public Result<String> runTestCase(@PathVariable Long testCaseId, Long testDeviceId, Map<String, Object> params) {
+        return Result.success(testCaseService.execute(testCaseId, params, testDeviceId));
     }
 }

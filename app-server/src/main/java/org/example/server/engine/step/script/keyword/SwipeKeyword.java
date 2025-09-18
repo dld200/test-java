@@ -2,6 +2,7 @@ package org.example.server.engine.step.script.keyword;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.mobile.automation.Automation;
+import org.example.server.engine.MobileContext;
 
 @Slf4j
 public class SwipeKeyword implements Keyword {
@@ -11,9 +12,11 @@ public class SwipeKeyword implements Keyword {
     }
 
     @Override
-    public Object execute(Automation automation, Object... args) {
+    public Object execute(MobileContext context, Object... args) {
+        if (args.length != 1) {
+            throw new IllegalArgumentException();
+        }
         String direction = args[0].toString();
-        log.info("Swipe : {}", direction);
-        return automation.swipe(direction);
+        return context.getAutomation().swipe(direction);
     }
 }

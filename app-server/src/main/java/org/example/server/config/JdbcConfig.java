@@ -19,7 +19,7 @@ public class JdbcConfig {
     }
 
     @Bean
-    public JdbcTemplate stageJdbcTemplate(@Qualifier("db1DataSource") DataSource ds) {
+    public JdbcTemplate stageJdbcTemplate(@Qualifier("stageDataSource") DataSource ds) {
         return new JdbcTemplate(ds);
     }
 

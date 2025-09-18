@@ -2,6 +2,7 @@ package org.example.server.engine.step.script.keyword;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.mobile.automation.Automation;
+import org.example.server.engine.MobileContext;
 
 @Slf4j
 public class SetupKeyword implements Keyword {
@@ -11,9 +12,12 @@ public class SetupKeyword implements Keyword {
     }
 
     @Override
-    public Object execute(Automation automation, Object... args) {
+    public Object execute(MobileContext context, Object... args) {
+        if (args.length != 2) {
+            throw new IllegalArgumentException();
+        }
         String deviceId = args[0].toString();
         String bundleId = args[1].toString();
-        return automation.setup(deviceId, bundleId);
+        return context.getAutomation().setup(deviceId, bundleId);
     }
 }
