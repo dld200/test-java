@@ -54,13 +54,13 @@ public class TestCaseService {
         return testCaseDao.findAll();
     }
 
-    public String execute(Long testCaseId, Map<String, Object> params, Long deviceId) {
+    public String execute(Long testCaseId, Map<String, Object> runtimeParams, Long deviceId) {
         try {
             TestCase testCase = findById(testCaseId);
             if (testCase == null) {
                 return "Test case not found with id: " + testCaseId;
             }
-            executeService.execute(testCase, params, deviceId);
+            executeService.execute(testCase, runtimeParams, deviceId);
             return "Test case executed successfully";
         } catch (Exception e) {
             return "Error executing test case: " + e.getMessage();

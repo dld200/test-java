@@ -25,7 +25,7 @@ public class TestStep {
 
     private String config;
 
-    private int order;
+    private Long position;
 
     private Date createTime;
 

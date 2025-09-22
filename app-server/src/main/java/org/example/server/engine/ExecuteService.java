@@ -8,12 +8,15 @@ import org.example.server.dao.TestCaseRunDao;
 import org.example.server.dao.TestDeviceDao;
 import org.example.server.dao.TestStepRunDao;
 import org.example.server.engine.step.IStep;
+import org.example.server.util.JsonTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -28,20 +31,27 @@ public class ExecuteService {
     @Autowired
     private TestDeviceDao testDeviceDao;
 
-    public void execute(TestCase testCase, Map<String, Object> params, Long deviceId) {
+    @Autowired
+    private Map<String, IStep> stepMap;
+
+    public void execute(TestCase testCase, Map<String, Object> runtimeParams, Long deviceId) {
         ExecuteContext context = new ExecuteContext();
 
         boolean failed = false;
 
         //传入参数和默认参数合并
-        Map<String, Object> testCaseParams = JSON.parseObject(testCase.getParams(), new TypeReference<>() {
+        List<Map<String, Object>> testCaseParams = JSON.parseObject(testCase.getConfig(), new TypeReference<>() {
         });
-        params.putAll(testCaseParams);
+        Map<String, Object> mergeParams = testCaseParams.stream()
+                .collect(Collectors.toMap(m -> m.get("key").toString(),
+                        m -> m.get("value")));
+        mergeParams.putAll(runtimeParams);
+        context.setRuntimeVariables(mergeParams);
 
         TestCaseRun testCaseRun = TestCaseRun.builder()
                 .testCaseId(testCase.getId())
                 .testCaseName(testCase.getName())
-                .input(JSON.toJSONString(params))
+                .input(JSON.toJSONString(mergeParams))
                 .status("running")
                 .startTime(new java.util.Date())
                 .build();
@@ -55,8 +65,8 @@ public class ExecuteService {
             } else {
                 MobileContext mobileContext = MobileContext.builder()
                         .testCase(testCase)
-                        .options(params)
-                        .variables(params)
+//                        .options(params)
+//                        .variables(params)
                         .testDevice(testDevice.get())
                         .deviceId(testDevice.get().getUuid())
                         .bundleId(testDevice.get().getInfo())
@@ -75,11 +85,11 @@ public class ExecuteService {
                     .build();
 
             try {
-                IStep step = StepFactory.createStep(testStep.getType(), context.resolve(testStep.getConfig()), context);
-                String output = step.execute(testStep, context);
-                testStepRun.setOutput(output);
+                IStep step = stepMap.get(testStep.getType() + "Step");
+                Object output = step.execute(testStep, context.resolve(testStep.getConfig()), context);
+                testStepRun.setOutput(JsonTool.toString(output));
                 testStepRun.setStatus("success");
-                context.setStepResult(testStep.getId(), output);
+                context.setStepResult(testStep.getPosition(), JsonTool.toString(output));
             } catch (Exception e) {
                 testStepRun.setStatus("failed");
                 testStepRun.setOutput("Error: " + e.getMessage());

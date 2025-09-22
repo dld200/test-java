@@ -27,10 +27,9 @@ public class TestCase {
 
     private String name;
 
-    private String desc;
+    private String description;
 
-    //参数
-    private String params;
+    private String config;
 
     @OneToMany(mappedBy = "testCase", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<TestStep> steps;
@@ -38,4 +37,9 @@ public class TestCase {
     private Date createTime;
 
     private Date updateTime;
+
+    @Override
+    public String toString() {
+        return "TestCase{id=" + id + ", name=" + name + "}";
+    }
 }

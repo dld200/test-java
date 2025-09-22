@@ -3,7 +3,6 @@ package org.example.server.engine;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import lombok.Data;
-import org.example.mobile.automation.Automation;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +12,7 @@ public class ExecuteContext {
 
     private MobileContext mobileContext;
 
-    private Map<Long, String> stepResults = new HashMap<>();
+//    private Map<Long, String> stepResults = new HashMap<>();
 
     private Map<String, Object> runtimeVariables = new HashMap<String, Object>();
 
@@ -24,6 +23,7 @@ public class ExecuteContext {
         String result = expression;
         for (Map.Entry<String, Object> entry : runtimeVariables.entrySet()) {
             String placeholder = "${" + entry.getKey() + "}";
+            //todo: string要加引号？用户自己加
             result = result.replace(placeholder, entry.getValue().toString());
         }
         return result;
@@ -31,7 +31,7 @@ public class ExecuteContext {
 
     //保存结果，给后续引用
     public void setStepResult(Long id, String result) {
-        stepResults.put(id, result);
+//        stepResults.put(id, result);
         //如果是json，解析出来放入runtimeVariables
         if (result != null && result.startsWith("{")) {
             Map<String, Object> map = JSON.parseObject(result, new TypeReference<>() {
@@ -41,9 +41,11 @@ public class ExecuteContext {
                     //直接覆盖
                     runtimeVariables.put(entry.getKey(), entry.getValue());
                 } else {
-                    runtimeVariables.put("Step" + id + ".output." + entry.getKey(), entry.getValue());
+                    runtimeVariables.put("Step" + id + "." + entry.getKey(), entry.getValue());
                 }
             }
+        } else {
+            runtimeVariables.put("Step" + id + ".output", result);
         }
     }
 }

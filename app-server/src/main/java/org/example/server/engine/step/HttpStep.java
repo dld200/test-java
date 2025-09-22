@@ -1,35 +1,34 @@
 package org.example.server.engine.step;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import lombok.Data;
 import org.example.common.domain.TestStep;
 import org.example.server.engine.ExecuteContext;
-import org.example.server.engine.StepFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
 
 @Data
+@Component
 public class HttpStep implements IStep {
-    private String method;
-    private String url;
-    private Map<String, String> headers;
-    private String body;
-
-    static {
-        StepFactory.registerStep("http", SqlStep.class);
-    }
-
     @Override
-    public String getName() {
+    public String getType() {
         return "http";
     }
 
     @Override
-    public String execute(TestStep testStep, ExecuteContext context) {
+    public String execute(TestStep testStep, String params, ExecuteContext context) {
+        String method = JSON.parseObject(params).getString("method");
+        String url = JSON.parseObject(params).getString("url");
+        Map<String, String> headers = JSON.parseObject(params).getObject("headers", new TypeReference<>() {
+        });
+        String body = JSON.parseObject(params).getString("body");
 
         RestTemplate restTemplate = new RestTemplate();
 
@@ -56,8 +55,6 @@ public class HttpStep implements IStep {
                 String.class
         );
 
-        String result = response.getBody();
-        context.setStepResult(testStep.getId(), result);
-        return result;
+        return response.getBody();
     }
 }

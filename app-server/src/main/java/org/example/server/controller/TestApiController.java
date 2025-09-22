@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/test-cases")
@@ -41,8 +42,11 @@ public class TestApiController {
         return testCaseService.findAll();
     }
 
-    @PostMapping("{id}/run")
-    public Result<String> runTestCase(@PathVariable Long testCaseId, Long testDeviceId, Map<String, Object> params) {
-        return Result.success(testCaseService.execute(testCaseId, params, testDeviceId));
+    @PostMapping("{testCaseId}/run")
+    public Result<String> runTestCase(@PathVariable Long testCaseId, @RequestBody List<Map<String, Object>> params) {
+        Map<String, Object> map = params.stream()
+                .collect(Collectors.toMap(m -> m.get("key").toString(),
+                        m -> m.get("value")));
+        return Result.success(testCaseService.execute(testCaseId, map, (Long) map.get("testDeviceId")));
     }
 }

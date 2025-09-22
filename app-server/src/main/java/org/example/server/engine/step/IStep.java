@@ -1,11 +1,12 @@
 package org.example.server.engine.step;
 
+import com.alibaba.fastjson.JSONObject;
 import org.example.common.domain.TestStep;
 import org.example.server.engine.ExecuteContext;
 
 public interface IStep {
 
-    String getName();
+    String getType();
 
-    String execute(TestStep testStep, ExecuteContext context);
+    Object execute(TestStep testStep, String params, ExecuteContext context);
 }
