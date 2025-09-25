@@ -8,6 +8,7 @@ import org.example.common.domain.TestDevice;
 import org.example.common.domain.TestCase;
 import org.example.mobile.automation.Automation;
 
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -18,7 +19,7 @@ public class MobileContext {
     private TestCase testCase;
     private Map<String, Object> options;
     private Map<String, Object> variables;
-    private Object result;
+    private String result;
     private TestDevice testDevice;
     private String deviceId;
     private String bundleId;

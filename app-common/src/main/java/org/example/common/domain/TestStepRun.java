@@ -1,9 +1,7 @@
 package org.example.common.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,8 +19,6 @@ public class TestStepRun {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long testCaseRunId;
-
     private Long testStepId;
 
     private String testStepName;
@@ -32,6 +28,11 @@ public class TestStepRun {
     private String output;
 
     private String status;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "test_case_run_id")
+    private TestCaseRun testCaseRun;
 
     private Date startTime;
 

@@ -3,16 +3,19 @@ package org.example.server.engine;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+import org.example.common.domain.TestCase;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Data
 public class ExecuteContext {
 
-    private MobileContext mobileContext;
+    private TestCase testCase;
 
-//    private Map<Long, String> stepResults = new HashMap<>();
+    private MobileContext mobileContext;
 
     private Map<String, Object> runtimeVariables = new HashMap<String, Object>();
 
@@ -23,15 +26,16 @@ public class ExecuteContext {
         String result = expression;
         for (Map.Entry<String, Object> entry : runtimeVariables.entrySet()) {
             String placeholder = "${" + entry.getKey() + "}";
-            //todo: string要加引号？用户自己加
             result = result.replace(placeholder, entry.getValue().toString());
+        }
+        if(expression.equals(result)){
+            log.error("变量替换失败: {} {}", result, runtimeVariables);
         }
         return result;
     }
 
     //保存结果，给后续引用
     public void setStepResult(Long id, String result) {
-//        stepResults.put(id, result);
         //如果是json，解析出来放入runtimeVariables
         if (result != null && result.startsWith("{")) {
             Map<String, Object> map = JSON.parseObject(result, new TypeReference<>() {

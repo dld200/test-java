@@ -1,21 +1,30 @@
 package org.example.server.engine.step.script;
 
+import com.mysql.cj.log.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.example.server.engine.MobileContext;
+import org.example.server.util.LogbackUtil;
 
 @Slf4j
 public class DefaultInterceptor implements Interceptor {
 
     @Override
     public void beforeExecution(MobileContext mobileContext) {
-        Object sleepBefore = mobileContext.getOption("sleep.before.execution");
-        if (sleepBefore != null && Boolean.parseBoolean(sleepBefore.toString())) {
-            sleep(mobileContext, "before.execution.delay");
+        if(mobileContext != null){
+            LogbackUtil.on();
         }
+//        Object sleepBefore = mobileContext.getOption("sleep.before.execution");
+//        if (sleepBefore != null && Boolean.parseBoolean(sleepBefore.toString())) {
+//            sleep(mobileContext, "before.execution.delay");
+//        }
     }
 
     @Override
     public void afterExecution(MobileContext mobileContext) {
+        if(mobileContext!= null){
+            mobileContext.setResult(LogbackUtil.getLogs());
+            LogbackUtil.off();
+        }
         Object sleepBefore = mobileContext.getOption("sleep.before.execution");
         if (sleepBefore != null && Boolean.parseBoolean(sleepBefore.toString())) {
             sleep(mobileContext, "after.execution.delay");

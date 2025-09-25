@@ -4,18 +4,16 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 import org.example.common.domain.*;
+import org.example.mobile.automation.IosSimulatorAutomation;
+import org.example.server.dao.AssetDao;
 import org.example.server.dao.TestCaseRunDao;
-import org.example.server.dao.TestDeviceDao;
 import org.example.server.dao.TestStepRunDao;
 import org.example.server.engine.step.IStep;
 import org.example.server.util.JsonTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -29,13 +27,14 @@ public class ExecuteService {
     private TestStepRunDao testStepRunDao;
 
     @Autowired
-    private TestDeviceDao testDeviceDao;
+    private AssetDao assetDao;
 
     @Autowired
     private Map<String, IStep> stepMap;
 
-    public void execute(TestCase testCase, Map<String, Object> runtimeParams, Long deviceId) {
+    public TestCaseRun execute(TestCase testCase, Map<String, Object> runtimeParams, Long deviceId) {
         ExecuteContext context = new ExecuteContext();
+        context.setTestCase(testCase);
 
         boolean failed = false;
 
@@ -52,24 +51,30 @@ public class ExecuteService {
                 .testCaseId(testCase.getId())
                 .testCaseName(testCase.getName())
                 .input(JSON.toJSONString(mergeParams))
+                .steps(new ArrayList<>())
                 .status("running")
                 .startTime(new java.util.Date())
                 .build();
         testCaseRunDao.save(testCaseRun);
 
         if (deviceId != null) {
-            Optional<TestDevice> testDevice = testDeviceDao.findById(deviceId);
-            if (testDevice.isEmpty()) {
+            Optional<Asset> asset = assetDao.findById(deviceId);
+            if (asset.isEmpty()) {
                 testCaseRun.setOutput("Error: Device not found");
                 testCaseRunDao.save(testCaseRun);
             } else {
                 MobileContext mobileContext = MobileContext.builder()
                         .testCase(testCase)
-//                        .options(params)
+                        .options(new HashMap<>() {
+                            {
+                                put("sleep.before.keyword", 1000);
+                            }
+                        })
 //                        .variables(params)
-                        .testDevice(testDevice.get())
-                        .deviceId(testDevice.get().getUuid())
-                        .bundleId(testDevice.get().getInfo())
+//                        .testDevice(testDevice.get())
+                        .deviceId(asset.get().getUuid())
+                        .bundleId("ca.snappay.snaplii.test")
+                        .automation(new IosSimulatorAutomation())
                         .build();
                 context.setMobileContext(mobileContext);
             }
@@ -77,9 +82,9 @@ public class ExecuteService {
 
         for (TestStep testStep : testCase.getSteps()) {
             TestStepRun testStepRun = TestStepRun.builder()
-                    .testCaseRunId(testCaseRun.getId())
+                    .testCaseRun(testCaseRun)
                     .testStepId(testStep.getId())
-                    .testStepName(testStep.getName())
+                    .testStepName(String.format("Step%s: %s", testStep.getPosition(), testStep.getType()))
                     .status("running")
                     .startTime(new Date())
                     .build();
@@ -91,14 +96,18 @@ public class ExecuteService {
                 testStepRun.setStatus("success");
                 context.setStepResult(testStep.getPosition(), JsonTool.toString(output));
             } catch (Exception e) {
+                log.error("Error: ", e);
                 testStepRun.setStatus("failed");
                 testStepRun.setOutput("Error: " + e.getMessage());
                 testCaseRun.setOutput("Error: " + e.getMessage());
                 failed = true;
                 break;
             } finally {
+                //使用步骤结果
+                testCaseRun.setOutput(testStepRun.getOutput());
                 testStepRun.setEndTime(new Date());
                 testStepRunDao.save(testStepRun);
+                testCaseRun.getSteps().add(testStepRun);
             }
         }
         if (failed) {
@@ -108,5 +117,6 @@ public class ExecuteService {
         }
         testCaseRun.setEndTime(new Date());
         testCaseRunDao.save(testCaseRun);
+        return testCaseRun;
     }
 }

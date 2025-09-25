@@ -1,39 +1,44 @@
 package org.example.common.domain;
 
+
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.Date;
-import java.util.List;
 
 @Data
-@Entity
+@Builder
 @DynamicUpdate
-public class TestCase {
+@Entity
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "asset")
+public class Asset {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
 
-    // api,ui,ai
     private String type;
 
-    private String description;
+    // 分组抢占模式
+    private String groupName;
 
-    private String config;
+    // 使用者
+    private String userName;
 
-    @OneToMany(mappedBy = "testCase", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<TestStep> steps;
+    //唯一
+    private String uuid;
+
+    @Column(columnDefinition = "json")
+    private String info;
 
     private Date createTime;
 
     private Date updateTime;
-
-    @Override
-    public String toString() {
-        return "TestCase{id=" + id + ", name=" + name + "}";
-    }
 }

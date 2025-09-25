@@ -5,6 +5,7 @@ import com.alibaba.fastjson.TypeReference;
 import lombok.Data;
 import org.example.common.domain.TestStep;
 import org.example.server.engine.ExecuteContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -12,11 +13,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Data
 @Component
 public class HttpStep implements IStep {
+
+    @Autowired
+    private RestTemplate restTemplate;
+
     @Override
     public String getType() {
         return "http";
@@ -26,19 +33,20 @@ public class HttpStep implements IStep {
     public String execute(TestStep testStep, String params, ExecuteContext context) {
         String method = JSON.parseObject(params).getString("method");
         String url = JSON.parseObject(params).getString("url");
-        Map<String, String> headers = JSON.parseObject(params).getObject("headers", new TypeReference<>() {
+        List<Map<String, Object>> keyValues = JSON.parseObject(params).getObject("headers", new TypeReference<>() {
         });
-        String body = JSON.parseObject(params).getString("body");
+        Map<String, Object> headers = keyValues.stream()
+                .collect(Collectors.toMap(m -> m.get("key").toString(),
+                        m -> m.get("value")));
 
-        RestTemplate restTemplate = new RestTemplate();
+        String body = JSON.parseObject(params).getString("body");
 
         // 创建HTTP头
         HttpHeaders httpHeaders = new HttpHeaders();
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                httpHeaders.add(entry.getKey(), entry.getValue());
-            }
+        for (Map.Entry<String, Object> entry : headers.entrySet()) {
+            httpHeaders.add(entry.getKey(), entry.getValue().toString());
         }
+
         HttpEntity<String> entity = new HttpEntity<>(body, httpHeaders);
 
         HttpMethod httpMethod;

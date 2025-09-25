@@ -25,7 +25,7 @@ public class LogbackUtil {
         MDC.remove("logToMemory");
     }
 
-    public static MdcLogAppender getMdcAppender() {
+    private static MdcLogAppender getMdcAppender() {
         LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
         Logger rootLogger = context.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
         return (MdcLogAppender) rootLogger.getAppender("MDC_MEMORY");
