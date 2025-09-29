@@ -1,7 +1,8 @@
-package org.example.mobile.automation;
+package org.example.mobile.automation.android;
 
 import lombok.extern.slf4j.Slf4j;
-import org.example.mobile.automation.source.UiElement;
+import org.example.mobile.automation.Automation;
+import org.example.mobile.automation.UiElement;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -4,7 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.extern.slf4j.Slf4j;
-import org.example.mobile.automation.source.UiElement;
+import org.example.mobile.automation.UiElement;
 
 import java.io.BufferedReader;
 import java.io.FileOutputStream;

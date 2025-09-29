@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 
-class PageNode {
+public class PageNode {
     String id;
     String name; // 页面名称
     String type; // stack/tab/modal
@@ -19,7 +19,7 @@ class PageNode {
         this.elements = new ArrayList<>();
     }
     
-    PageNode(String id, String name, String type) {
+    public PageNode(String id, String name, String type) {
         this.id = id;
         this.name = name;
         this.type = type;

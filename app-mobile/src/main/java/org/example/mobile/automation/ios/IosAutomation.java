@@ -1,10 +1,11 @@
-package org.example.mobile.automation;
+package org.example.mobile.automation.ios;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.extern.slf4j.Slf4j;
-import org.example.mobile.automation.source.UiElement;
+import org.example.mobile.automation.Automation;
+import org.example.mobile.automation.UiElement;
 import org.example.mobile.util.HttpUtil;
 import org.example.mobile.util.WDAUtil;
 import org.springframework.util.StringUtils;

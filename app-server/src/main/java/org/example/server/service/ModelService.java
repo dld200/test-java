@@ -3,12 +3,11 @@ package org.example.server.service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import org.example.common.domain.PageModel;
-import org.example.mobile.automation.source.UIElementIosParser;
-import org.example.mobile.automation.source.UiElement;
+import org.example.mobile.automation.ios.UIElementIosParser;
+import org.example.mobile.automation.UiElement;
 import org.example.mobile.automation.Automation;
-import org.example.mobile.automation.IosAutomation;
-import org.example.mobile.automation.source.UIElementHtmlSerializer;
-import org.example.mobile.automation.source.UIElementXmlSerializer;
+import org.example.mobile.automation.ios.IosAutomation;
+import org.example.mobile.automation.UIElementSerializer;
 import org.example.server.dao.PageModelDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -63,7 +62,7 @@ public class ModelService {
         String source = automation.source();
         UiElement cleanTree = UIElementIosParser.parseAndClean(source);
         String json = JSON.toJSONString(cleanTree, SerializerFeature.SortField, SerializerFeature.PrettyFormat);
-        String xml = UIElementXmlSerializer.toXml(cleanTree);
+        String xml = UIElementSerializer.toXml(cleanTree);
         String html = UIElementHtmlSerializer.toHtml(cleanTree, 1.0f);
 
         PageModel pageModel = new PageModel();

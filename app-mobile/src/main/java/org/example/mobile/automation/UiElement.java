@@ -1,4 +1,4 @@
-package org.example.mobile.automation.source;
+package org.example.mobile.automation;
 
 import lombok.Data;
 

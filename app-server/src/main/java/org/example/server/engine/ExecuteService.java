@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 import org.example.common.domain.*;
-import org.example.mobile.automation.IosAutomation;
+import org.example.mobile.automation.ios.IosAutomation;
 import org.example.server.dao.AssetDao;
 import org.example.server.dao.TestCaseRunDao;
 import org.example.server.dao.TestStepRunDao;
