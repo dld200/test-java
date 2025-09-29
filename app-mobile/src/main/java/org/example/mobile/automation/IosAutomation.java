@@ -1,122 +1,260 @@
-//package org.example.auto.device.impl;
-//
-//import org.example.auto.device.Automation;
-//import org.example.auto.device.WebDriverAgent;
-//import lombok.extern.slf4j.Slf4j;
-//
-//import java.util.Map;
-//
-///**
-// * iOS自动化实现类
-// */
-//@Slf4j
-//public class IosAutomation implements Automation {
-//
-//    private boolean initialized = false;
-//    private WebDriverAgent webDriverAgent;
-//    private String deviceId;
+package org.example.mobile.automation;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import lombok.extern.slf4j.Slf4j;
+import org.example.mobile.automation.source.UiElement;
+import org.example.mobile.util.HttpUtil;
+import org.example.mobile.util.WDAUtil;
+import org.springframework.util.StringUtils;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Base64;
+
+@Slf4j
+public class IosAutomation implements Automation {
+
+    private final String WDA_URL = "http://127.0.0.1:8100";
+    private String projectPath;
+    private String sessionId;
+
+
+    @Override
+    public String source() {
+        String res = HttpUtil.sendGet(WDA_URL + "/session/" + sessionId + "/source");
+        JsonObject json = JsonParser.parseString(res).getAsJsonObject();
+        if (json.has("value")) {
+            return json.get("value").getAsString();
+        }
+        throw new RuntimeException("Element not found: " + res);
+    }
+
+    @Override
+    public String click(String name) {
+        String elementId = findElement("id", name);
+        UiElement e = getElementRect(elementId);
+        return tap(e.getX() + e.getWidth() / 2, e.getY() + e.getHeight() / 2);
+    }
+
+    @Override
+    public String input(String name, String text) {
+        ensureSession();
+        String elementId = findElement("id", name);
+        String body = String.format("{\"value\":[\"%s\"]}", text);
+        return HttpUtil.sendPost(WDA_URL + "/session/" + sessionId + "/element/" + elementId + "/value", body);
+    }
+
+    @Override
+    public String screenshot(String fileName) {
+        ensureSession();
+        String res = HttpUtil.sendGet(WDA_URL + "/session/" + sessionId + "/screenshot");
+        JsonObject json = JsonParser.parseString(res).getAsJsonObject();
+        //base64 to image
+        byte[] imageBytes = Base64.getDecoder().decode(json.get("value").getAsString());
+        if (StringUtils.isEmpty(fileName)) {
+            fileName = "screenshot_" + LocalDateTime.now() + ".png";
+        }
+        try {
+            FileOutputStream outputStream = new FileOutputStream(fileName);
+            outputStream.write(imageBytes);
+            outputStream.close();
+        } catch (IOException e) {
+
+        }
+        return fileName;
+    }
+
+    @Override
+    public boolean swipe(String direction) {
+        switch (direction) {
+            case "left":
+                swipe(0, 200, 400, 200, 0.1f);
+                break;
+            case "right":
+                swipe(400, 200, 0, 200, 0.1f);
+                break;
+            case "up":
+                swipe(50, 500, 50, 20, 0.1f);
+                break;
+            case "down":
+                break;
+            default:
+                break;
+        }
+        return true;
+    }
 //
 //    @Override
-//    public void init(Map<String, Object> options) {
-//        log.info("Initializing iOS automation...");
-//
-//        // 获取设备ID和WDA配置
-//        deviceId = (String) options.get("deviceId");
-//        String wdaHost = (String) options.getOrDefault("wdaHost", "localhost");
-//        int wdaPort = (int) options.getOrDefault("wdaPort", 8100);
-//        String wdaBundleId = (String) options.getOrDefault("wdaBundleId", "com.facebook.WebDriverAgentRunner");
-//
-//        log.info("Connecting to iOS device: {}", deviceId);
-//        log.info("Using WDA at {}:{}", wdaHost, wdaPort);
-//        log.info("Using WDA bundle ID: {}", wdaBundleId);
-//
-//        // 初始化WebDriverAgent客户端
-//        webDriverAgent = new WebDriverAgent(wdaHost, wdaPort);
-//
-//        // 模拟初始化过程
-//        try {
-//            Thread.sleep(1500); // 模拟初始化耗时
-//            initialized = true;
-//            log.info("iOS automation initialized successfully");
-//        } catch (InterruptedException e) {
-//            Thread.currentThread().interrupt();
-//            log.error("iOS automation initialization interrupted", e);
-//        }
+//    public List<TestDevice> listDevices() {
+//        return List.of();
 //    }
-//
-//    @Override
-//    public Object screen(String action, Map<String, Object> params) {
-//        if (!initialized) {
-//            throw new IllegalStateException("iOS automation not initialized");
-//        }
-//
-//        log.info("Performing screen action on iOS: {}", action);
-//
-//        switch (action) {
-//            case "screenshot":
-//                return takeScreenshot(params);
-//            case "tap":
-//                return tap(params);
-//            case "swipe":
-//                return swipe(params);
-//            case "clickElement":
-//                return clickElement(params);
-//            case "sendKeys":
-//                return sendKeys(params);
-//            default:
-//                throw new IllegalArgumentException("Unsupported screen action: " + action);
-//        }
-//    }
-//
-//    private Object takeScreenshot(Map<String, Object> params) {
-//        // 在实际应用中，这里会调用WebDriverAgent进行截图
-//        String filename = (String) params.getOrDefault("filename", "ios_screenshot.png");
-//        log.info("Taking screenshot and saving to: {}", filename);
-//        // 模拟截图操作
-//        return "Screenshot saved to " + filename;
-//    }
-//
-//    private Object tap(Map<String, Object> params) {
-//        int x = (int) params.getOrDefault("x", 0);
-//        int y = (int) params.getOrDefault("y", 0);
-//        log.info("Tapping at coordinates ({}, {})", x, y);
-//        // 在实际应用中，这里会调用WebDriverAgent点击屏幕
-//        return "Tapped at (" + x + ", " + y + ")";
-//    }
-//
-//    private Object swipe(Map<String, Object> params) {
-//        int startX = (int) params.getOrDefault("startX", 0);
-//        int startY = (int) params.getOrDefault("startY", 0);
-//        int endX = (int) params.getOrDefault("endX", 0);
-//        int endY = (int) params.getOrDefault("endY", 0);
-//        int duration = (int) params.getOrDefault("duration", 500);
-//
-//        log.info("Swiping from ({}, {}) to ({}, {}) in {}ms", startX, startY, endX, endY, duration);
-//        // 在实际应用中，这里会调用WebDriverAgent滑动屏幕
-//        return "Swiped from (" + startX + ", " + startY + ") to (" + endX + ", " + endY + ")";
-//    }
-//
-//    private Object clickElement(Map<String, Object> params) {
-//        String elementId = (String) params.get("elementId");
-//        if (elementId == null) {
-//            throw new IllegalArgumentException("Element ID is required for clickElement action");
-//        }
-//
-//        log.info("Clicking element with ID: {}", elementId);
-//        // 在实际应用中，这里会调用WebDriverAgent点击元素
-//        return "Clicked element with ID: " + elementId;
-//    }
-//
-//    private Object sendKeys(Map<String, Object> params) {
-//        String elementId = (String) params.get("elementId");
-//        String text = (String) params.get("text");
-//
-//        if (elementId == null || text == null) {
-//            throw new IllegalArgumentException("Element ID and text are required for sendKeys action");
-//        }
-//
-//        log.info("Sending keys '{}' to element with ID: {}", text, elementId);
-//        // 在实际应用中，这里会调用WebDriverAgent向元素发送文本
-//        return "Sent keys '" + text + "' to element with ID: " + elementId;
-//    }
-//}
+
+    @Override
+    public boolean launch(String deviceId, String bundleId) {
+        //check session
+        if (isWDARunning() && sessionId != null) {
+            return true;
+        } else {
+            WDAUtil.runCommand("xcrun simctl launch " + deviceId + " xx.facebook.WebDriverAgentRunner");
+            createSession(bundleId);
+        }
+        return waitForWDA();
+    }
+
+    /**
+     * 启动 WDA, 同时拉起被测应用
+     */
+    private void launchWDA(String deviceId) {
+        // 启动 WebDriverAgentRunner
+        String cmd = String.format(
+                "xcodebuild -project %s/WebDriverAgent.xcodeproj " +
+                        "-scheme WebDriverAgentRunner " +
+                        "-destination 'platform=iOS Simulator,id=%s' test",
+                projectPath, deviceId);
+
+        // 异步执行
+        new Thread(() -> {
+            try {
+                ProcessBuilder pb = new ProcessBuilder("/bin/sh", "-c", cmd);
+                pb.redirectErrorStream(true);
+                pb.start();
+            } catch (Exception e) {
+                log.error("Error: ", e);
+            }
+        }).start();
+    }
+
+    /**
+     * 检查 WDA 是否可用
+     */
+    private boolean isWDARunning() {
+        try {
+            String res = HttpUtil.sendGet(WDA_URL + "/status");
+            JsonObject json = JsonParser.parseString(res).getAsJsonObject();
+            sessionId = json.get("sessionId").getAsString();
+            return res.contains("success");
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * 等待 WDA 启动
+     */
+    private boolean waitForWDA() {
+        int retries = 30;
+        while (retries-- > 0) {
+            if (isWDARunning()) return true;
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ignored) {
+            }
+        }
+        return false;
+    }
+
+    private void createSession(String bundleId) {
+        String body = String.format("{\"capabilities\":{\"alwaysMatch\":{\"platformName\":\"iOS\",\"bundleId\":\"%s\"}}}", bundleId);
+        String res = HttpUtil.sendPost(WDA_URL + "/session", body);
+
+        JsonObject json = JsonParser.parseString(res).getAsJsonObject();
+        JsonObject value = json.getAsJsonObject("value");
+        sessionId = value.get("sessionId") != null ? value.get("sessionId").getAsString() : value.getAsJsonObject().get("sessionId").getAsString();
+
+        if (sessionId == null || sessionId.isEmpty()) {
+            throw new RuntimeException("Failed to create WDA session: " + res);
+        }
+    }
+
+    private void ensureSession() {
+        if (sessionId == null || sessionId.isEmpty()) {
+            throw new IllegalStateException("WDA session not created. Call createSession() first.");
+        }
+    }
+
+    /**
+     * 从多元素中找最合适的元素
+     */
+    private String findElement(String using, String value) {
+        ensureSession();
+        String body = String.format("{\"using\":\"%s\",\"value\":\"%s\"}", using, value);
+        String res = HttpUtil.sendPost(WDA_URL + "/session/" + sessionId + "/elements", body);
+
+        JsonObject json = JsonParser.parseString(res).getAsJsonObject();
+        if (json.has("value")) {
+            for (JsonElement element : json.getAsJsonArray("value")) {
+                String id = element.getAsJsonObject().get("ELEMENT").getAsString();
+                if (getElementAttribute("visible", id).toString().equals("true")) {
+                    return id;
+                }
+            }
+        }
+        // todo: 从多元素中找最合适的元素
+        throw new RuntimeException("Element not found: " + res);
+    }
+
+    /**
+     * 检查元素属性
+     */
+    private Object getElementAttribute(String attr, String elementId) {
+        ensureSession();
+        String res = HttpUtil.sendGet(WDA_URL + "/session/" + sessionId + "/element/" + elementId + "/attribute/" + attr);
+        JsonObject json = JsonParser.parseString(res).getAsJsonObject();
+        return json.get("value");
+    }
+
+    /**
+     * 获取元素坐标
+     */
+    private UiElement getElementRect(String elementId) {
+        ensureSession();
+        String res = HttpUtil.sendGet(WDA_URL + "/session/" + sessionId + "/element/" + elementId + "/rect");
+        JsonObject json = JsonParser.parseString(res).getAsJsonObject();
+        return new UiElement(json.getAsJsonObject("value").get("x").getAsInt(),
+                json.getAsJsonObject("value").get("y").getAsInt(),
+                json.getAsJsonObject("value").get("width").getAsInt(),
+                json.getAsJsonObject("value").get("height").getAsInt());
+    }
+
+    private void pressButton(String buttonName) {
+        ensureSession();
+//        const _map = {
+//                "HOME": "home",
+//                "VOLUME_UP": "volumeup",
+//                "VOLUME_DOWN": "volumedown",
+//		};
+        HttpUtil.sendPost(WDA_URL + "/session/" + sessionId + "/wda/pressbutton", "{\"name\":\"" + buttonName + "\"}");
+    }
+
+    /**
+     * 获取文本
+     */
+    private String getText(String elementId) {
+        ensureSession();
+        String res = HttpUtil.sendGet(WDA_URL + "/session/" + sessionId + "/element/" + elementId + "/text");
+        JsonObject json = JsonParser.parseString(res).getAsJsonObject();
+        return json.get("value").getAsString();
+    }
+
+    /**
+     * 点击坐标
+     */
+    private String tap(int x, int y) {
+        ensureSession();
+        String body = String.format("{\"x\":%d,\"y\":%d}", x, y);
+        return HttpUtil.sendPost(WDA_URL + "/session/" + sessionId + "/wda/tap", body);
+    }
+
+    /**
+     * 滑动
+     */
+    private void swipe(int startX, int startY, int endX, int endY, float seconds) {
+        ensureSession();
+        String body = String.format("{\"fromX\":%d,\"fromY\":%d,\"toX\":%d,\"toY\":%d,\"duration\":%s}",
+                startX, startY, endX, endY, seconds);
+        HttpUtil.sendPost(WDA_URL + "/session/" + sessionId + "/wda/dragfromtoforduration", body);
+    }
+}

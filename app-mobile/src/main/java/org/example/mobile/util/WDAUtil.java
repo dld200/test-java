@@ -4,7 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.extern.slf4j.Slf4j;
-import org.example.mobile.automation.Element;
+import org.example.mobile.automation.source.UiElement;
 
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
@@ -148,11 +148,11 @@ public class WDAUtil {
     /**
      * 获取元素坐标
      */
-    public static Element getElementRect(String elementId) {
+    public static UiElement getElementRect(String elementId) {
         ensureSession();
         String res = HttpUtil.sendGet(WDA_URL + "/session/" + sessionId + "/element/" + elementId + "/rect");
         JsonObject json = JsonParser.parseString(res).getAsJsonObject();
-        return new Element(json.getAsJsonObject("value").get("x").getAsInt(),
+        return new UiElement(json.getAsJsonObject("value").get("x").getAsInt(),
                 json.getAsJsonObject("value").get("y").getAsInt(),
                 json.getAsJsonObject("value").get("width").getAsInt(),
                 json.getAsJsonObject("value").get("height").getAsInt());
@@ -163,7 +163,7 @@ public class WDAUtil {
      */
     public static void clickElement(String elementId) {
         ensureSession();
-        Element e = getElementRect(elementId);
+        UiElement e = getElementRect(elementId);
         WDAUtil.tap(e.getX() + e.getWidth() / 2, e.getY() + e.getHeight() / 2);
 //        HttpUtils.sendPost(WDA_URL + "/session/" + sessionId + "/element/" + elementId + "/click", "{}");
     }

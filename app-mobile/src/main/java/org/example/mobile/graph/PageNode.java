@@ -10,7 +10,7 @@ class PageNode {
     String name; // 页面名称
     String type; // stack/tab/modal
     Map<String, Object> params;
-    List<Element> elements; // 页面包含的元素列表
+    List<AppElement> elements; // 页面包含的元素列表
 
     PageNode(String id, String type) {
         this.id = id;
@@ -149,7 +149,7 @@ class PageNode {
         List<String> elementJsons = splitJsonArray(content);
         for (String elementJson : elementJsons) {
             if (!elementJson.isEmpty()) {
-                elements.add(new Element("{" + elementJson + "}"));
+                elements.add(new AppElement("{" + elementJson + "}"));
             }
         }
     }
@@ -188,7 +188,7 @@ class PageNode {
      * 添加元素到页面
      * @param element 要添加的元素
      */
-    public void addElement(Element element) {
+    public void addElement(AppElement element) {
         if (elements == null) {
             elements = new ArrayList<>();
         }
@@ -199,7 +199,7 @@ class PageNode {
      * 获取页面的所有元素
      * @return 元素列表
      */
-    public List<Element> getElements() {
+    public List<AppElement> getElements() {
         return elements;
     }
     
@@ -207,7 +207,7 @@ class PageNode {
      * 设置页面的元素列表
      * @param elements 元素列表
      */
-    public void setElements(List<Element> elements) {
+    public void setElements(List<AppElement> elements) {
         this.elements = elements;
     }
     

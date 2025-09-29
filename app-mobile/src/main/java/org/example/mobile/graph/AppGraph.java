@@ -110,7 +110,7 @@ public class AppGraph {
     }
 
     
-    public void addElementToPage(String pageId, Element element) {
+    public void addElementToPage(String pageId, AppElement element) {
         PageNode pageNode = nodes.get(pageId);
         if (pageNode == null) {
             addPage(pageId, "stack");
@@ -148,7 +148,7 @@ public class AppGraph {
             PageNode pageNode = entry.getValue();
             
             if (pageNode.elements != null) {
-                for (Element element : pageNode.elements) {
+                for (AppElement element : pageNode.elements) {
                     String targetPageId = element.getTargetPageId();
                     if (targetPageId != null) {
                         // 确保目标页面存在
@@ -200,7 +200,7 @@ public class AppGraph {
             sb.append(",\"elements\":[");
             for (int i = 0; i < pageNode.elements.size(); i++) {
                 if (i > 0) sb.append(",");
-                Element element = pageNode.elements.get(i);
+                AppElement element = pageNode.elements.get(i);
                 sb.append("{");
                 
                 if (element.getId() != null) {
@@ -297,7 +297,7 @@ public class AppGraph {
             // 获取当前页面的所有元素
             PageNode currentPageNode = nodes.get(currentNodeId);
             if (currentPageNode != null && currentPageNode.elements != null) {
-                for (Element element : currentPageNode.elements) {
+                for (AppElement element : currentPageNode.elements) {
                     String targetPageId = element.getTargetPageId();
                     if (targetPageId != null && !visited.contains(targetPageId)) {
                         // 创建新路径
@@ -427,7 +427,7 @@ public class AppGraph {
                 sb.append(",\"elements\":[");
                 for (int i = 0; i < node.elements.size(); i++) {
                     if (i > 0) sb.append(",");
-                    Element element = node.elements.get(i);
+                    AppElement element = node.elements.get(i);
                     sb.append("{");
                     
                     if (element.getId() != null) {

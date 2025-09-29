@@ -4,7 +4,7 @@ public class PageNodeTest {
     public static void main(String[] args) {
         // 测试Element的JSON解析
         String elementJson = "{\"id\":\"login_btn\",\"type\":\"button\",\"text\":\"登录\",\"label\":\"login_btn\",\"x\":100,\"y\":200,\"width\":80,\"height\":40,\"targetPageId\":\"home_page\"}";
-        Element element = new Element(elementJson);
+        AppElement element = new AppElement(elementJson);
         
         System.out.println("Element解析结果:");
         System.out.println("ID: " + element.getId());
@@ -28,7 +28,7 @@ public class PageNodeTest {
         System.out.println("Elements count: " + pageNode.getElements().size());
         
         for (int i = 0; i < pageNode.getElements().size(); i++) {
-            Element e = pageNode.getElements().get(i);
+            AppElement e = pageNode.getElements().get(i);
             System.out.println("Element " + i + ": " + e.getId() + " (" + e.getType() + ") - " + e.getText());
         }
     }

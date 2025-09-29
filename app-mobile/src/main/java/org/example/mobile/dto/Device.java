@@ -1,4 +1,4 @@
-package org.example.mobile.model;
+package org.example.mobile.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

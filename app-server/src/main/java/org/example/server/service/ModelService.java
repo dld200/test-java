@@ -3,12 +3,12 @@ package org.example.server.service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import org.example.common.domain.PageModel;
-import org.example.mobile.source.WdaSourceParser;
-import org.example.mobile.automation.Element;
+import org.example.mobile.automation.source.UIElementIosParser;
+import org.example.mobile.automation.source.UiElement;
 import org.example.mobile.automation.Automation;
-import org.example.mobile.automation.IosSimulatorAutomation;
-import org.example.mobile.source.UIElementHtmlSerializer;
-import org.example.mobile.source.UIElementXmlSerializer;
+import org.example.mobile.automation.IosAutomation;
+import org.example.mobile.automation.source.UIElementHtmlSerializer;
+import org.example.mobile.automation.source.UIElementXmlSerializer;
 import org.example.server.dao.PageModelDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,8 +50,8 @@ public class ModelService {
     }
 
     public PageModel capture() throws IOException {
-        Automation automation = new IosSimulatorAutomation();
-        automation.setup("F0F99D79-FCB0-45C3-AD55-89CCCA9BDBFD", "ca.snappay.snaplii.test");
+        Automation automation = new IosAutomation();
+        automation.launch("F0F99D79-FCB0-45C3-AD55-89CCCA9BDBFD", "ca.snappay.snaplii.test");
         automation.screenshot("/Users/snap/workspace/app-agent/uploads/xxxx.png");
 //        URL url = ResourceReader.class.getClassLoader().getResource("xxxx.png");
         try {
@@ -61,7 +61,7 @@ public class ModelService {
         }
         String file = fileService.saveFile(new File("/Users/snap/workspace/app-agent/uploads/xxxx.png"));
         String source = automation.source();
-        Element cleanTree = WdaSourceParser.parseAndClean(source);
+        UiElement cleanTree = UIElementIosParser.parseAndClean(source);
         String json = JSON.toJSONString(cleanTree, SerializerFeature.SortField, SerializerFeature.PrettyFormat);
         String xml = UIElementXmlSerializer.toXml(cleanTree);
         String html = UIElementHtmlSerializer.toHtml(cleanTree, 1.0f);

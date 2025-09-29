@@ -87,53 +87,53 @@ public class AppGraphExample {
         
         // 为页面添加元素
         // 登录页面元素
-        appGraph.addElementToPage("login_page", new Element("username_input", "input", "用户名", "username", 50, 100, 200, 40));
-        appGraph.addElementToPage("login_page", new Element("password_input", "input", "密码", "password", 50, 150, 200, 40));
-        appGraph.addElementToPage("login_page", new Element("login_btn", "button", "登录", "login_btn", 100, 200, 80, 40, "home_page"));
+        appGraph.addElementToPage("login_page", new AppElement("username_input", "input", "用户名", "username", 50, 100, 200, 40));
+        appGraph.addElementToPage("login_page", new AppElement("password_input", "input", "密码", "password", 50, 150, 200, 40));
+        appGraph.addElementToPage("login_page", new AppElement("login_btn", "button", "登录", "login_btn", 100, 200, 80, 40, "home_page"));
         
         // 主页元素
-        appGraph.addElementToPage("home_page", new Element("welcome_text", "text", "欢迎", "welcome_text", 150, 50, 100, 30));
-        appGraph.addElementToPage("home_page", new Element("profile_btn", "button", "个人资料", "profile_btn", 250, 10, 80, 30, "profile_page"));
-        appGraph.addElementToPage("home_page", new Element("settings_btn", "button", "设置", "settings_btn", 250, 50, 80, 30, "settings_page"));
-        appGraph.addElementToPage("home_page", new Element("search_btn", "button", "搜索", "search_btn", 10, 100, 80, 30, "search_page"));
-        appGraph.addElementToPage("home_page", new Element("notification_btn", "button", "通知", "notification_btn", 10, 140, 80, 30, "notification_page"));
-        appGraph.addElementToPage("home_page", new Element("product_list_btn", "button", "产品列表", "product_list_btn", 10, 180, 80, 30, "product_list_page"));
+        appGraph.addElementToPage("home_page", new AppElement("welcome_text", "text", "欢迎", "welcome_text", 150, 50, 100, 30));
+        appGraph.addElementToPage("home_page", new AppElement("profile_btn", "button", "个人资料", "profile_btn", 250, 10, 80, 30, "profile_page"));
+        appGraph.addElementToPage("home_page", new AppElement("settings_btn", "button", "设置", "settings_btn", 250, 50, 80, 30, "settings_page"));
+        appGraph.addElementToPage("home_page", new AppElement("search_btn", "button", "搜索", "search_btn", 10, 100, 80, 30, "search_page"));
+        appGraph.addElementToPage("home_page", new AppElement("notification_btn", "button", "通知", "notification_btn", 10, 140, 80, 30, "notification_page"));
+        appGraph.addElementToPage("home_page", new AppElement("product_list_btn", "button", "产品列表", "product_list_btn", 10, 180, 80, 30, "product_list_page"));
         
         // 个人资料页面元素
-        appGraph.addElementToPage("profile_page", new Element("profile_title", "text", "个人资料", "profile_title", 150, 50, 100, 30));
-        appGraph.addElementToPage("profile_page", new Element("name_input", "input", "姓名", "name_input", 50, 100, 200, 40));
-        appGraph.addElementToPage("profile_page", new Element("email_input", "input", "邮箱", "email_input", 50, 150, 200, 40));
-        appGraph.addElementToPage("profile_page", new Element("save_btn", "button", "保存", "save_btn", 100, 200, 80, 40));
-        appGraph.addElementToPage("profile_page", new Element("settings_btn", "button", "设置", "settings_btn", 10, 10, 80, 30, "settings_page"));
-        appGraph.addElementToPage("profile_page", new Element("order_btn", "button", "我的订单", "order_btn", 10, 50, 80, 30, "order_confirmation_page"));
+        appGraph.addElementToPage("profile_page", new AppElement("profile_title", "text", "个人资料", "profile_title", 150, 50, 100, 30));
+        appGraph.addElementToPage("profile_page", new AppElement("name_input", "input", "姓名", "name_input", 50, 100, 200, 40));
+        appGraph.addElementToPage("profile_page", new AppElement("email_input", "input", "邮箱", "email_input", 50, 150, 200, 40));
+        appGraph.addElementToPage("profile_page", new AppElement("save_btn", "button", "保存", "save_btn", 100, 200, 80, 40));
+        appGraph.addElementToPage("profile_page", new AppElement("settings_btn", "button", "设置", "settings_btn", 10, 10, 80, 30, "settings_page"));
+        appGraph.addElementToPage("profile_page", new AppElement("order_btn", "button", "我的订单", "order_btn", 10, 50, 80, 30, "order_confirmation_page"));
         
         // 设置页面元素
-        appGraph.addElementToPage("settings_page", new Element("help_btn", "button", "帮助", "help_btn", 10, 10, 80, 30, "help_page"));
-        appGraph.addElementToPage("settings_page", new Element("logout_btn", "button", "退出登录", "logout_btn", 10, 50, 80, 30, "login_page"));
+        appGraph.addElementToPage("settings_page", new AppElement("help_btn", "button", "帮助", "help_btn", 10, 10, 80, 30, "help_page"));
+        appGraph.addElementToPage("settings_page", new AppElement("logout_btn", "button", "退出登录", "logout_btn", 10, 50, 80, 30, "login_page"));
         
         // 通知页面元素
-        appGraph.addElementToPage("notification_page", new Element("product_detail_btn", "button", "查看详情", "product_detail_btn", 10, 10, 80, 30, "product_detail_page"));
+        appGraph.addElementToPage("notification_page", new AppElement("product_detail_btn", "button", "查看详情", "product_detail_btn", 10, 10, 80, 30, "product_detail_page"));
         
         // 搜索页面元素
-        appGraph.addElementToPage("search_page", new Element("product_list_btn", "button", "产品列表", "product_list_btn", 10, 10, 80, 30, "product_list_page"));
+        appGraph.addElementToPage("search_page", new AppElement("product_list_btn", "button", "产品列表", "product_list_btn", 10, 10, 80, 30, "product_list_page"));
         
         // 产品列表页面元素
-        appGraph.addElementToPage("product_list_page", new Element("product_detail_btn", "button", "产品详情", "product_detail_btn", 10, 10, 80, 30, "product_detail_page"));
+        appGraph.addElementToPage("product_list_page", new AppElement("product_detail_btn", "button", "产品详情", "product_detail_btn", 10, 10, 80, 30, "product_detail_page"));
         
         // 产品详情页面元素
-        appGraph.addElementToPage("product_detail_page", new Element("cart_btn", "button", "加入购物车", "cart_btn", 10, 10, 80, 30, "cart_page"));
+        appGraph.addElementToPage("product_detail_page", new AppElement("cart_btn", "button", "加入购物车", "cart_btn", 10, 10, 80, 30, "cart_page"));
         
         // 购物车页面元素
-        appGraph.addElementToPage("cart_page", new Element("checkout_btn", "button", "结算", "checkout_btn", 10, 10, 80, 30, "checkout_page"));
+        appGraph.addElementToPage("cart_page", new AppElement("checkout_btn", "button", "结算", "checkout_btn", 10, 10, 80, 30, "checkout_page"));
         
         // 结算页面元素
-        appGraph.addElementToPage("checkout_page", new Element("confirm_btn", "button", "确认订单", "confirm_btn", 10, 10, 80, 30, "order_confirmation_page"));
+        appGraph.addElementToPage("checkout_page", new AppElement("confirm_btn", "button", "确认订单", "confirm_btn", 10, 10, 80, 30, "order_confirmation_page"));
         
         // 订单确认页面元素
-        appGraph.addElementToPage("order_confirmation_page", new Element("home_btn", "button", "返回首页", "home_btn", 10, 10, 80, 30, "home_page"));
+        appGraph.addElementToPage("order_confirmation_page", new AppElement("home_btn", "button", "返回首页", "home_btn", 10, 10, 80, 30, "home_page"));
         
         // 帮助页面元素
-        appGraph.addElementToPage("help_page", new Element("home_btn", "button", "返回首页", "home_btn", 10, 10, 80, 30, "home_page"));
+        appGraph.addElementToPage("help_page", new AppElement("home_btn", "button", "返回首页", "home_btn", 10, 10, 80, 30, "home_page"));
         
         // 同步邻接表关系（确保targetPageId与邻接表同步）
         appGraph.syncAdjacencyList();

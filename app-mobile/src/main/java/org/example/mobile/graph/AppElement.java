@@ -3,7 +3,7 @@ package org.example.mobile.graph;
 /**
  * 页面元素类，表示页面上的一个组件
  */
-public class Element {
+public class AppElement {
     private String id;       // 元素ID
     private String type;     // 元素类型
     private String text;     // 元素文本
@@ -15,11 +15,11 @@ public class Element {
     private String targetPageId; // 元素指向的目标页面ID
     
     // 默认构造函数
-    public Element() {
+    public AppElement() {
     }
     
     // 从JSON字符串解析构造函数
-    public Element(String json) {
+    public AppElement(String json) {
         parseJson(json);
     }
     
@@ -76,7 +76,7 @@ public class Element {
     }
     
     // 带参数的构造函数（不包含ID）
-    public Element(String type, String text, String label, int x, int y, int width, int height) {
+    public AppElement(String type, String text, String label, int x, int y, int width, int height) {
         this.type = type;
         this.text = text;
         this.label = label;
@@ -87,7 +87,7 @@ public class Element {
     }
     
     // 带参数的构造函数（包含ID）
-    public Element(String id, String type, String text, String label, int x, int y, int width, int height) {
+    public AppElement(String id, String type, String text, String label, int x, int y, int width, int height) {
         this.id = id;
         this.type = type;
         this.text = text;
@@ -99,7 +99,7 @@ public class Element {
     }
     
     // 带参数的构造函数（包含ID和目标页面ID）
-    public Element(String id, String type, String text, String label, int x, int y, int width, int height, String targetPageId) {
+    public AppElement(String id, String type, String text, String label, int x, int y, int width, int height, String targetPageId) {
         this.id = id;
         this.type = type;
         this.text = text;

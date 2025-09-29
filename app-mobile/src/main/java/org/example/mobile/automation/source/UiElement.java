@@ -1,4 +1,4 @@
-package org.example.mobile.automation;
+package org.example.mobile.automation.source;
 
 import lombok.Data;
 
@@ -8,7 +8,7 @@ import java.util.List;
 import static java.lang.Math.abs;
 
 @Data
-public class Element {
+public class UiElement {
     public String name;
 
     public String label;
@@ -23,21 +23,21 @@ public class Element {
 
     public int x, y, width, height;
 
-    public transient Element parent;
+    public transient UiElement parent;
 
-    public List<Element> children = new ArrayList<>();
+    public List<UiElement> children = new ArrayList<>();
 
-    public Element(){
+    public UiElement(){
     }
 
-    public Element(int x, int y, int width, int height) {
+    public UiElement(int x, int y, int width, int height) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
     }
 
-    public boolean eliminate(Element parent) {
+    public boolean eliminate(UiElement parent) {
         if (this.enabled && this.visible && this.accessible) {
             return false;
         }
@@ -64,14 +64,14 @@ public class Element {
         return false;
     }
 
-    public void addChild(Element child) {
+    public void addChild(UiElement child) {
         child.parent = this;
         this.children.add(child);
     }
 
     @Override
     public String toString() {
-        return String.format("%s [name=%s, label=%s, x=%.1f y=%.1f w=%.1f h=%.1f]",
+        return String.format("%s [name=%s, label=%s, x=%d y=%d w=%d h=%d]",
                 type, name, label, x, y, width, height);
     }
 }

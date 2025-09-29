@@ -1,7 +1,7 @@
 package org.example.mobile.util;
 
 import lombok.extern.slf4j.Slf4j;
-import org.example.mobile.model.Device;
+import org.example.mobile.dto.Device;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

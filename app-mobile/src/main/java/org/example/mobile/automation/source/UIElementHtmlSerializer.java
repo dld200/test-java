@@ -1,16 +1,14 @@
-package org.example.mobile.source;
-
-import org.example.mobile.automation.Element;
+package org.example.mobile.automation.source;
 
 public class UIElementHtmlSerializer {
 
-    public static String toHtml(Element root, float scale) {
+    public static String toHtml(UiElement root, float scale) {
         StringBuilder sb = new StringBuilder();
         sb.append("<!DOCTYPE html>\n<html>\n<head>\n")
           .append("<meta charset=\"UTF-8\">\n")
           .append("<style>\n")
           .append("body { margin:0; background:#f0f0f0; }\n")
-//          .append("div { overflow: hidden; }\n")
+          .append("div { border:1px solid #007bff; }\n")
           .append(".screen { position:relative; background:white; transform: scale(0.75); transform-origin: top left;}\n")
           .append(".element { position:absolute; box-sizing:border-box; ")
           .append("font-size:14px; overflow:hidden; word-wrap: break-word; }\n")
@@ -35,7 +33,7 @@ public class UIElementHtmlSerializer {
         return sb.toString();
     }
 
-    private static void appendElement(StringBuilder sb, Element node, float scale) {
+    private static void appendElement(StringBuilder sb, UiElement node, float scale) {
         if (node == null) return;
 
         float left = node.x * scale;
@@ -61,7 +59,7 @@ public class UIElementHtmlSerializer {
         sb.append("</div>\n");
 
         // 递归子元素
-        for (Element child : node.children) {
+        for (UiElement child : node.children) {
             appendElement(sb, child, scale);
         }
     }

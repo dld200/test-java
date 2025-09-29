@@ -3,7 +3,7 @@ package org.example.server.task;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.example.common.domain.Asset;
-import org.example.mobile.model.Device;
+import org.example.mobile.dto.Device;
 import org.example.mobile.util.XcodeUtil;
 import org.example.server.service.AssetService;
 import org.springframework.beans.factory.annotation.Autowired;
