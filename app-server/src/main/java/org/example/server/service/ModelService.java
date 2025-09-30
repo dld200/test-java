@@ -3,7 +3,7 @@ package org.example.server.service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import org.example.common.domain.PageModel;
-import org.example.mobile.automation.ios.UIElementIosParser;
+import org.example.mobile.automation.ios.IosSourceParser;
 import org.example.mobile.automation.UiElement;
 import org.example.mobile.automation.Automation;
 import org.example.mobile.automation.ios.IosAutomation;
@@ -50,7 +50,8 @@ public class ModelService {
 
     public PageModel capture() throws IOException {
         Automation automation = new IosAutomation();
-        automation.launch("F0F99D79-FCB0-45C3-AD55-89CCCA9BDBFD", "ca.snappay.snaplii.test");
+        automation.connect("F0F99D79-FCB0-45C3-AD55-89CCCA9BDBFD");
+        automation.launch("ca.snappay.snaplii.test");
         automation.screenshot("/Users/snap/workspace/app-agent/uploads/xxxx.png");
 //        URL url = ResourceReader.class.getClassLoader().getResource("xxxx.png");
         try {
@@ -60,10 +61,10 @@ public class ModelService {
         }
         String file = fileService.saveFile(new File("/Users/snap/workspace/app-agent/uploads/xxxx.png"));
         String source = automation.source();
-        UiElement cleanTree = UIElementIosParser.parseAndClean(source);
+        UiElement cleanTree = new IosSourceParser().parseAndClean(source);
         String json = JSON.toJSONString(cleanTree, SerializerFeature.SortField, SerializerFeature.PrettyFormat);
         String xml = UIElementSerializer.toXml(cleanTree);
-        String html = UIElementHtmlSerializer.toHtml(cleanTree, 1.0f);
+        String html = UIElementSerializer.toHtml(cleanTree, 1.0f);
 
         PageModel pageModel = new PageModel();
         pageModel.setName("New Model");

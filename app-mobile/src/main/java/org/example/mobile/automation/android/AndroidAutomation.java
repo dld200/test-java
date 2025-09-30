@@ -2,40 +2,85 @@ package org.example.mobile.automation.android;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.mobile.automation.Automation;
+import org.example.mobile.automation.UIElementParser;
 import org.example.mobile.automation.UiElement;
+import org.example.mobile.dto.Device;
+import org.example.mobile.util.ShellUtil;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Android自动化实现类
  */
 @Slf4j
 public class AndroidAutomation implements Automation {
+    private String deviceId;
+    private final UIElementParser parser = new AndroidSourceParser();
+    private UiElement currentTree;
 
+    private static final Pattern KEY_VALUE = Pattern.compile("(\\S+):(\\S+)");
 
-    private final String deviceId;
+    @Override
+    public List<Device> listDevices() {
+        String[] lines = ShellUtil.exec("adb devices -l").split("\\n");
+        List<Device> devices = new ArrayList<>();
+        for (String line : lines) {
+            line = line.trim();
+            if (line.isEmpty() || line.startsWith("List of devices")) continue;
 
-    public AndroidAutomation(String deviceId) {
-        this.deviceId = deviceId;
+            String[] parts = line.split("\\s+");
+            if (parts.length < 2) continue;
+
+            String udid = parts[0];
+            String status = parts[1];
+            if (!"device".equals(status)) continue; // 只处理已连接设备
+
+            Device device = new Device();
+            device.setUdid(udid);
+            device.setStatus(status);
+            device.setPlatform("android");  // adb 设备默认android
+            device.setSimulator(false);     // adb连线设备默认不是模拟器
+
+            // 解析 key:value 字段
+            for (int i = 2; i < parts.length; i++) {
+                Matcher m = KEY_VALUE.matcher(parts[i]);
+                if (m.matches()) {
+                    String key = m.group(1);
+                    String value = m.group(2);
+                    switch (key) {
+                        case "model":
+                        case "product":
+                            device.setName(value);
+                            break;
+                        // 这里可以根据需求扩展其它字段
+                    }
+                }
+            }
+            devices.add(device);
+        }
+        deviceIds.addAll(devices.stream().map(Device::getUdid).toList());
+        return devices;
     }
 
     @Override
-    public boolean launch(String deviceId, String bundleId) {
-        execute("shell", "monkey", "-p", bundleId, "-c", "android.intent.category.LAUNCHER", "1");
+    public boolean connect(String deviceId) {
+        this.deviceId = deviceId;
+        return ShellUtil.exec(String.format("adb -s %s get-state", deviceId)).equals("device");
+    }
+
+    @Override
+    public boolean launch(String bundleId) {
+        ShellUtil.exec(String.format("adb -s %s shell monkey -p %s -c android.intent.category.LAUNCHER 1", deviceId, bundleId));
         return true;
     }
 
     @Override
     public String source() {
-        String dump = execute("exec-out", "uiautomator", "dump", "/dev/tty");
+        String dump = ShellUtil.exec(String.format("adb -s %s exec-out uiautomator dump /dev/tty", deviceId));
         int start = dump.indexOf("<?xml");
         int end = dump.indexOf("</hierarchy>");
         if (start >= 0 && end > start) {
@@ -44,9 +89,16 @@ public class AndroidAutomation implements Automation {
         return dump;
     }
 
-    //todo:
     public UiElement findElement(String elementId) {
-        return null;
+        if (currentTree != null) {
+            Optional<UiElement> e = currentTree.findByName(elementId).stream().findFirst();
+            if (e.isPresent()) {
+                return e.get();
+            }
+        }
+        UiElement element = parser.parse(source());
+        currentTree = element;
+        return element.findByName(elementId).stream().findFirst().orElse(null);
     }
 
     @Override
@@ -54,7 +106,7 @@ public class AndroidAutomation implements Automation {
         UiElement e = findElement(elementId);
         int cx = e.x + e.width / 2;
         int cy = e.y + e.height / 2;
-        return execute("shell", "input", "tap", String.valueOf(cx), String.valueOf(cy));
+        return ShellUtil.exec(String.format("adb -s %s shell input tap %s %s", deviceId, cx, cy));
     }
 
     @Override
@@ -67,14 +119,15 @@ public class AndroidAutomation implements Automation {
         text = text.replace(" ", "%s")
                 .replace("'", "\\'")
                 .replace("\"", "\\\"");
-        return execute("shell", "input", "text", text);
+        ShellUtil.exec(String.format("adb -s %s shell input text %s", deviceId, text));
+        return ShellUtil.exec(String.format("adb -s %s shell input keyevent 66", deviceId));
     }
 
     @Override
     public String screenshot(String localFileName) {
         String remote = "/sdcard/" + localFileName;
-        execute("shell", "screencap", "-p", remote);
-        execute("pull", remote, localFileName);
+        ShellUtil.exec(String.format("adb -s %s shell screencap -p %s", deviceId, remote));
+        ShellUtil.exec(String.format("adb -s %s pull %s %s", deviceId, remote, localFileName));
         return localFileName;
     }
 
@@ -82,15 +135,16 @@ public class AndroidAutomation implements Automation {
     public boolean swipe(String direction) {
         switch (direction) {
             case "left":
-                execute("shell", "input", "swipe", "0", "200", "400", "200", "500");
+                ShellUtil.exec(String.format("adb -s %s shell input swipe 5 1200 300 1200 500", deviceId));
                 break;
             case "right":
-                execute("shell", "input", "swipe", "400", "200", "0", "200", "500");
+                ShellUtil.exec(String.format("adb -s %s shell input swipe 200 1600 900 1200 500", deviceId));
                 break;
             case "up":
-                execute("shell", "input", "swipe", "50", "500", "50", "20", "500");
+                ShellUtil.exec(String.format("adb -s %s shell input swipe 540 1600 540 800 500", deviceId));
                 break;
             case "down":
+                ShellUtil.exec(String.format("adb -s %s shell input swipe 540 800 540 1600 500", deviceId));
                 break;
             default:
                 break;
@@ -98,51 +152,27 @@ public class AndroidAutomation implements Automation {
         return true;
     }
 
-    private String execute(String... args) {
-        List<String> cmd = new ArrayList<>();
-        cmd.add("adb");
-        cmd.add("-s");
-        cmd.add(deviceId);
-        cmd.addAll(Arrays.asList(args));
-        StringBuilder sb = new StringBuilder();
-        ProcessBuilder pb = new ProcessBuilder(cmd);
-        pb.redirectErrorStream(true);
-        try {
-            Process process = pb.start();
-            boolean finished = process.waitFor(30, TimeUnit.SECONDS);
-            if (!finished) {
-                process.destroyForcibly();
-            }
-            InputStream is = process.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                sb.append(line).append("\n");
-            }
-        } catch (Exception e) {
-
-        }
-        return sb.toString();
-    }
-
-    //    @Override
-    public void terminate(String bundleId) throws IOException, InterruptedException {
-        execute("shell", "am", "force-stop", bundleId);
+    public String terminate(String bundleId) {
+        return ShellUtil.exec(String.format("adb -s %s shell am force-stop %s", deviceId, bundleId));
     }
 
     public static void main(String[] args) throws Exception {
         String deviceId = "53F5T19905000341";
-        Automation robot = new AndroidAutomation(deviceId);
+        Automation robot = new AndroidAutomation();
+
+        System.out.println(robot.listDevices());
+
+        robot.connect(deviceId);
 
         // 获取元素并点击
-        String ok = robot.click("ca.snappay.snaplii.test:id/button1");
-        System.out.println("click result: " + ok);
+//        String ok = robot.click("search_input");
+//        System.out.println("click result: " + ok);
 
         // 输入文本示例
-        robot.input("ca.snappay.snaplii.test:id/inputField", "hello world");
+        robot.input("search_input", "hello world");
 
         // 滑动示例
-        robot.swipe("up");
+        robot.swipe("left");
 
         // 截图示例
         String f = robot.screenshot("screen.png");

@@ -74,4 +74,20 @@ public class UiElement {
         return String.format("%s [name=%s, label=%s, x=%d y=%d w=%d h=%d]",
                 type, name, label, x, y, width, height);
     }
+
+    public List<UiElement> findByName(String elementId) {
+        List<UiElement> result = new ArrayList<>();
+        findByNameRecursive(this, elementId, result);
+        return result;
+    }
+
+    private void findByNameRecursive(UiElement element, String elementId, List<UiElement> result) {
+        for (UiElement child : element.children) {
+            if (elementId.equals(child.name)) {
+                result.add(child);
+            }
+            // 递归继续向下找
+            findByNameRecursive(child, elementId, result);
+        }
+    }
 }

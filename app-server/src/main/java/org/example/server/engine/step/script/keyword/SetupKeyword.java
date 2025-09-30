@@ -19,6 +19,7 @@ public class SetupKeyword implements Keyword {
         }
         String deviceId = args[0].toString();
         String bundleId = args[1].toString();
-        return context.getAutomation().launch(deviceId, bundleId);
+        context.getAutomation().connect(deviceId);
+        return context.getAutomation().launch(bundleId);
     }
 }

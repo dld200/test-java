@@ -1,10 +1,12 @@
-package org.example.mobile.automation.android;
+package org.example.mobile.automation.ios;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import org.example.mobile.automation.Automation;
+import org.example.mobile.automation.UIElementParser;
 import org.example.mobile.automation.UIElementSerializer;
 import org.example.mobile.automation.UiElement;
+import org.springframework.data.repository.init.ResourceReader;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -16,13 +18,10 @@ import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-public class UIElementAndroidParser extends Automation.UIElementParser {
+public class IosSourceParser implements UIElementParser {
 
-    private static Pattern pattern = Pattern.compile("\\[(\\d+),(\\d+)\\]\\[(\\d+),(\\d+)\\]");
-
+    @Override
     public UiElement parse(String xml) {
         try {
             // 清理 BOM 和多余字符
@@ -46,31 +45,23 @@ public class UIElementAndroidParser extends Automation.UIElementParser {
         }
     }
 
-    /**
-     * <node index="0" text="Save $9.99 with Exclusive Coupon" resource-id="" class="android.widget.TextView"
-     * package="ca.snappay.snaplii.test"
-     * content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false"
-     * focused="false" scrollable="false" long-clickable="false" password="false" selected="false"
-     * bounds="[69,1961][677,2019]" /></node>
-     */
     @Override
     public UiElement buildTree(org.w3c.dom.Element node, UiElement parent) {
         UiElement element = new UiElement();
-        element.type = node.getAttribute("class");
-        element.name = node.getAttribute("content-desc");
-        element.label = node.getAttribute("text");
+        element.type = node.getTagName();
+        element.name = node.getAttribute("name");
+        element.label = node.getAttribute("label");
         element.enabled = "true".equals(node.getAttribute("enabled"));
-        element.visible = element.enabled;
-        element.accessible = element.enabled;
-        //"true".equals(node.getAttribute("focusable")) || "true".equals(node.getAttribute("false"));
+        element.visible = "true".equals(node.getAttribute("visible"));
+        element.accessible = "true".equals(node.getAttribute("accessible"));
 
         // 解析坐标
-        Matcher matcher = pattern.matcher(node.getAttribute("bounds"));
-        if (matcher.find()) {
-            element.x = Integer.parseInt(matcher.group(1));
-            element.y = Integer.parseInt(matcher.group(2));
-            element.width = Integer.parseInt(matcher.group(3)) - element.x;
-            element.height = Integer.parseInt(matcher.group(4)) - element.y;
+        try {
+            element.x = Integer.parseInt(node.getAttribute("x"));
+            element.y = Integer.parseInt(node.getAttribute("y"));
+            element.width = Integer.parseInt(node.getAttribute("width"));
+            element.height = Integer.parseInt(node.getAttribute("height"));
+        } catch (NumberFormatException ignored) {
         }
 
         element.parent = parent;
@@ -89,18 +80,22 @@ public class UIElementAndroidParser extends Automation.UIElementParser {
     }
 
     public static void main(String[] args) throws Exception {
-        String deviceId = "53F5T19905000341";
-        Automation robot = new AndroidAutomation(deviceId);
-        robot.launch(deviceId, "ca.snappay.snaplii.test");
-        // 启动应用举例
-//        robot.launchApp("ca.snappay.snaplii.test");
+        String path = ResourceReader.class.getClassLoader().getResource("data.txt").toURI().getPath();
 
-        String xml = robot.source();
-        System.out.println(xml);
-        Automation.UIElementParser x = new UIElementAndroidParser();
+//        String xml = new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
+
+        Automation automation = new IosAutomation();
+        automation.connect("F0F99D79-FCB0-45C3-AD55-89CCCA9BDBFD");
+
+        automation.launch("ca.snappay.snaplii.test");
+
+        String xml = automation.source();
+        //        String xml = getXmlWithoutExceedingElements(automation, 5);
+        UIElementParser x = new IosSourceParser();
 
         UiElement cleanTree = x.parseAndClean(xml);
         x.printTree(cleanTree, 0);
+        // 添加JSON输出
         String jsonOutput = JSON.toJSONString(cleanTree, SerializerFeature.SortField, SerializerFeature.PrettyFormat);
 //        System.out.println(jsonOutput);
 
@@ -108,9 +103,8 @@ public class UIElementAndroidParser extends Automation.UIElementParser {
         System.out.println(xmlOutput);
 
         // 转为 HTML，scale=1.0 表示原尺寸，0.5 表示缩小一半
-        String html = UIElementSerializer.toHtml(cleanTree, 0.4f);
+        String html = UIElementSerializer.toHtml(cleanTree, 1.0f);
         // 保存到文件
         Files.write(Paths.get("ui-prototype" + System.currentTimeMillis() + ".html"), html.getBytes(StandardCharsets.UTF_8));
-
     }
 }

@@ -23,4 +23,16 @@ public class Device {
     private String status;
 
     private String os;
+
+//    @Override
+//    public String toString() {
+//        return "Device{" +
+//                "name='" + name + '\'' +
+//                ", platform='" + platform + '\'' +
+//                ", simulator=" + simulator +
+//                ", udid='" + udid + '\'' +
+//                ", status='" + status + '\'' +
+//                ", os='" + os + '\'' +
+//                '}';
+//    }
 }
