@@ -6,20 +6,17 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class SetupKeyword implements Keyword {
+public class ConnectKeyword implements Keyword {
     @Override
     public String getName() {
-        return "setup";
+        return "connect";
     }
 
     @Override
     public Object execute(MobileContext context, Object... args) {
-        if (args.length != 2) {
-            throw new IllegalArgumentException();
-        }
         String deviceId = args[0].toString();
-        String bundleId = args[1].toString();
-        context.getAutomation().connect(deviceId);
-        return context.getAutomation().launch(bundleId);
+//        String bundleId = args[1].toString();
+        return context.getAutomation().connect(deviceId);
+//        return context.getAutomation().launch(bundleId);
     }
 }

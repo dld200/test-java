@@ -4,7 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 import org.example.common.domain.*;
+import org.example.mobile.automation.android.AndroidAutomation;
 import org.example.mobile.automation.ios.IosAutomation;
+import org.example.mobile.dto.Device;
 import org.example.server.dao.AssetDao;
 import org.example.server.dao.TestCaseRunDao;
 import org.example.server.dao.TestStepRunDao;
@@ -63,6 +65,8 @@ public class ExecuteService {
                 testCaseRun.setOutput("Error: Device not found");
                 testCaseRunDao.save(testCaseRun);
             } else {
+                Device device = JSON.parseObject(asset.get().getInfo(), Device.class);
+
                 MobileContext mobileContext = MobileContext.builder()
                         .testCase(testCase)
                         .options(new HashMap<>() {
@@ -74,7 +78,7 @@ public class ExecuteService {
 //                        .testDevice(testDevice.get())
                         .deviceId(asset.get().getUuid())
                         .bundleId("ca.snappay.snaplii.test")
-                        .automation(new IosAutomation())
+                        .automation(device.getPlatform().equals("android")? new AndroidAutomation(): new IosAutomation())
                         .build();
                 context.setMobileContext(mobileContext);
             }

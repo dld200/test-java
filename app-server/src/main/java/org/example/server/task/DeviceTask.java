@@ -21,16 +21,29 @@ public class DeviceTask {
     private AssetService assetService;
 
     //定时任务获取设备列表
-    @Scheduled(fixedRate = 30 * 1000)
-    public void getDeviceList() {
+    @Scheduled(fixedRate = 60 * 1000)
+    public void getIos() {
         List<Device> devices = new IosAutomation().listDevices();
-        devices.addAll(new AndroidAutomation().listDevices());
-
         for (Device device : devices) {
             Asset asset = Asset.builder()
                     .name(device.getName())
                     .type("device")
                     .groupName("iphone")
+                    .uuid(device.getUdid())
+                    .info(JSON.toJSONString(device))
+                    .build();
+            assetService.save(asset);
+        }
+    }
+
+    @Scheduled(fixedRate = 60 * 1000)
+    public void getAndroid() {
+        List<Device> devices = new AndroidAutomation().listDevices();
+        for (Device device : devices) {
+            Asset asset = Asset.builder()
+                    .name(device.getName())
+                    .type("device")
+                    .groupName("android")
                     .uuid(device.getUdid())
                     .info(JSON.toJSONString(device))
                     .build();
