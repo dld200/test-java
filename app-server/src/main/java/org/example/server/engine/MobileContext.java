@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.example.common.domain.TestDevice;
 import org.example.common.domain.TestCase;
 import org.example.mobile.automation.Automation;
+import org.example.mobile.dto.Device;
 
 import java.util.List;
 import java.util.Map;
@@ -20,7 +21,7 @@ public class MobileContext {
     private Map<String, Object> options;
     private Map<String, Object> variables;
     private String result;
-    private TestDevice testDevice;
+    private Device device;
     private String deviceId;
     private String bundleId;
     private Automation automation;

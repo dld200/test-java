@@ -73,6 +73,8 @@ public class ScriptStep implements IStep {
         }
 
         GroovyShell shell = new GroovyShell(binding);
+        //先连接设备
+        script = String.format("connect('%s')\n", context.getMobileContext().getDevice().getUdid()) + script;
         result = shell.evaluate(script);
         interceptor.afterExecution(context.getMobileContext());
         if (context.getMobileContext() != null) {

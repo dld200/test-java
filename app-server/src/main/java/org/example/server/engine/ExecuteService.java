@@ -75,7 +75,7 @@ public class ExecuteService {
                             }
                         })
 //                        .variables(params)
-//                        .testDevice(testDevice.get())
+                        .device(device)
                         .deviceId(asset.get().getUuid())
                         .bundleId("ca.snappay.snaplii.test")
                         .automation(device.getPlatform().equals("android")? new AndroidAutomation(): new IosAutomation())
