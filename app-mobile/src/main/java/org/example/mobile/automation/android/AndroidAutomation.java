@@ -36,8 +36,7 @@ public class AndroidAutomation implements Automation {
             if (parts.length < 2) continue;
 
             String udid = parts[0];
-            String status = parts[1];
-            if (!"device".equals(status)) continue; // 只处理已连接设备
+            String status = parts[1].equals("device")?"online":"offline";
 
             Device device = new Device();
             device.setUdid(udid);

@@ -1,8 +1,11 @@
 package org.example.mobile.util;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+@Slf4j
 public class ShellUtil {
 
     public static class CommandExecutionException extends RuntimeException {
@@ -22,6 +25,7 @@ public class ShellUtil {
      * @return 命令执行的输出文本（多行合并成一段字符串）
      */
     public static String exec(String command) {
+        log.info("Execute command: {}", command);
         try {
             Process process = Runtime.getRuntime().exec(command);
 

@@ -1,6 +1,5 @@
 package org.example.server.engine.step.script;
 
-import com.mysql.cj.log.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.example.server.engine.MobileContext;
 import org.example.server.util.LogbackUtil;
@@ -10,9 +9,8 @@ public class DefaultInterceptor implements Interceptor {
 
     @Override
     public void beforeExecution(MobileContext mobileContext) {
-        if(mobileContext != null){
-            LogbackUtil.on();
-        }
+        if (mobileContext == null) return;
+        LogbackUtil.on();
 //        Object sleepBefore = mobileContext.getOption("sleep.before.execution");
 //        if (sleepBefore != null && Boolean.parseBoolean(sleepBefore.toString())) {
 //            sleep(mobileContext, "before.execution.delay");
@@ -21,10 +19,9 @@ public class DefaultInterceptor implements Interceptor {
 
     @Override
     public void afterExecution(MobileContext mobileContext) {
-        if(mobileContext!= null){
-            mobileContext.setResult(LogbackUtil.getLogs());
-            LogbackUtil.off();
-        }
+        if (mobileContext == null) return;
+        mobileContext.setResult(LogbackUtil.getLogs());
+        LogbackUtil.off();
         Object sleepBefore = mobileContext.getOption("sleep.before.execution");
         if (sleepBefore != null && Boolean.parseBoolean(sleepBefore.toString())) {
             sleep(mobileContext, "after.execution.delay");
@@ -37,6 +34,7 @@ public class DefaultInterceptor implements Interceptor {
 
     @Override
     public void beforeKeyword(MobileContext mobileContext, String keyword) {
+        if (mobileContext == null) return;
         Object sleepBefore = mobileContext.getOption("sleep.before.keyword");
         if (sleepBefore != null && Integer.parseInt(sleepBefore.toString()) > 0) {
             sleep(mobileContext, "sleep.before.keyword");
@@ -45,6 +43,7 @@ public class DefaultInterceptor implements Interceptor {
 
     @Override
     public void afterKeyword(MobileContext mobileContext, String keyword) {
+        if (mobileContext == null) return;
         Object screenshotEnabled = mobileContext.getOption("screenshot.after.keyword");
         if (screenshotEnabled != null && Boolean.parseBoolean(screenshotEnabled.toString())) {
             screenshot(mobileContext, keyword + ".png");
@@ -56,6 +55,7 @@ public class DefaultInterceptor implements Interceptor {
     }
 
     private void sleep(MobileContext mobileContext, String delayKey) {
+        if (mobileContext == null) return;
         Object delayObj = mobileContext.getOption(delayKey);
         long delay = 1000; // 默认延迟1秒
         if (delayObj != null) {
@@ -69,6 +69,7 @@ public class DefaultInterceptor implements Interceptor {
     }
 
     private void screenshot(MobileContext mobileContext, String fileName) {
+        if (mobileContext == null) return;
 //        fileName = "screenshot_" + LocalDateTime.now() + ".png";
         mobileContext.getAutomation().screenshot(fileName);
     }

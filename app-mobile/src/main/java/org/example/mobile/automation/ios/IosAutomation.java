@@ -42,7 +42,7 @@ public class IosAutomation implements Automation {
 
         // 异步执行
         new Thread(() -> {
-            ShellUtil.exec(cmd);
+//            ShellUtil.exec(cmd);
         }).start();
         return waitForWDA();
     }
