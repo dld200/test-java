@@ -126,7 +126,7 @@ public class AndroidAutomation implements Automation {
     @Override
     public String screenshot(String localFileName) {
         ShellUtil.exec(String.format("adb -s %s shell screencap -p %s", deviceId, "/sdcard/xx.png"));
-        ShellUtil.exec(String.format("adb -s %s pull %s %s", deviceId, "xx.png", localFileName));
+        ShellUtil.exec(String.format("adb -s %s pull %s %s", deviceId, "/sdcard/xx.png", localFileName));
         return localFileName;
     }
 

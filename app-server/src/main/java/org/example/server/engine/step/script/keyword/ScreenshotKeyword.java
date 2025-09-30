@@ -28,7 +28,7 @@ public class ScreenshotKeyword implements Keyword {
         if (args.length > 0) {
             name = args[0].toString();
         }
-        String fileName = "/Users/snap/workspace/app-agent/uploads/" + name + ".png";
+        String fileName = "/Users/snap/workspace/app-agent/uploads/" + name;
         context.getAutomation().screenshot(fileName);
         try {
             Thread.sleep(2000);
