@@ -7,17 +7,6 @@ import java.io.InputStreamReader;
 
 @Slf4j
 public class ShellUtil {
-
-    public static class CommandExecutionException extends RuntimeException {
-        public CommandExecutionException(String message) {
-            super(message);
-        }
-
-        public CommandExecutionException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
-
     /**
      * 执行系统命令并返回标准输出字符串
      *
@@ -46,14 +35,14 @@ public class ShellUtil {
                         while ((line = errorReader.readLine()) != null) {
                             errorOutput.append(line).append("\n");
                         }
-                        throw new CommandExecutionException("Command failed with exit code " + exitCode +
+                        throw new RuntimeException("Command failed with exit code " + exitCode +
                                 "\nError output:\n" + errorOutput.toString());
                     }
                 }
                 return output.toString();
             }
         } catch (Exception e) {
-            throw new CommandExecutionException("Failed to execute command: " + command, e);
+            throw new RuntimeException("Failed to execute command: " + command, e);
         }
     }
 
@@ -62,7 +51,7 @@ public class ShellUtil {
         try {
             String output = exec("adb devices -l");
             System.out.println(output);
-        } catch (CommandExecutionException e) {
+        } catch (RuntimeException e) {
             e.printStackTrace();
         }
     }

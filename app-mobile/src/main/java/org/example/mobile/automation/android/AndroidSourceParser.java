@@ -90,11 +90,11 @@ public class AndroidSourceParser implements UIElementParser {
         return element;
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         String deviceId = "53F5T19905000341";
         Automation robot = new AndroidAutomation();
         System.out.println(robot.listDevices());
-//        robot.launch(deviceId, "ca.snappay.snaplii.test");
+
         // 启动应用举例
 //        robot.launchApp("ca.snappay.snaplii.test");
 

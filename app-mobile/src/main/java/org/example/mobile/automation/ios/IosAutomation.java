@@ -24,7 +24,7 @@ import java.util.List;
 public class IosAutomation implements Automation {
 
     private final String WDA_URL = "http://127.0.0.1:8100";
-    private String projectPath;
+    private String projectPath = "/Users/snap/workspace/WebDriverAgent";
     private String sessionId;
     private String deviceId;
     private final UIElementParser parser = new AndroidSourceParser();
@@ -34,16 +34,32 @@ public class IosAutomation implements Automation {
     public boolean connect(String deviceId) {
         this.deviceId = deviceId;
         // 启动 WebDriverAgentRunner
-        String cmd = String.format(
-                "xcodebuild -project %s/WebDriverAgent.xcodeproj " +
-                        "-scheme WebDriverAgentRunner " +
-                        "-destination 'platform=iOS Simulator,id=%s' test",
-                projectPath, deviceId);
-
-        // 异步执行
+        String platform = deviceId.length() == "00008120-000A79100AE0201".length() ? "iOS" : "iOS Simulator";
+        // 启动wda功能
         new Thread(() -> {
-//            ShellUtil.exec(cmd);
+            // ShellUtil.exec("xcrun simctl launch " + deviceId + " xx.facebook.WebDriverAgentRunner");
+            String cmd = String.format(
+                    "xcodebuild -project %s/WebDriverAgent.xcodeproj " +
+                            "-scheme WebDriverAgentRunner " +
+                            "-destination 'platform=%s,id=%s' test",
+                    projectPath, platform, deviceId);
+            ShellUtil.exec(cmd);
         }).start();
+        // 真机代理
+        if(platform.equals("iOS")) {
+            new Thread(() -> {
+                ShellUtil.exec("iproxy 8100 8100");
+            }).start();
+        }
+        return waitForWDA();
+    }
+
+    /**
+     * 重建session
+     */
+    @Override
+    public boolean launch(String bundleId) {
+        createSession(bundleId);
         return waitForWDA();
     }
 
@@ -126,7 +142,7 @@ public class IosAutomation implements Automation {
             }
             if (line.contains(") (")) {
                 String[] parts = line.split("\\) \\(");
-                String udid = parts[1].substring(0, parts[1].length() - 2);
+                String udid = parts[1].substring(0, parts[1].length() - 1);
                 int index = parts[0].lastIndexOf(" (");
                 String name = parts[0].substring(0, index);
                 String os = parts[0].substring(index + 2);
@@ -169,20 +185,7 @@ public class IosAutomation implements Automation {
                 devices.add(device);
             }
         }
-
         return devices;
-    }
-
-    @Override
-    public boolean launch(String bundleId) {
-        //check session
-        if (sessionId != null) {
-            return true;
-        } else {
-            ShellUtil.exec("xcrun simctl launch " + deviceId + " xx.facebook.WebDriverAgentRunner");
-            createSession(bundleId);
-        }
-        return waitForWDA();
     }
 
     /**
@@ -227,12 +230,6 @@ public class IosAutomation implements Automation {
         }
     }
 
-    private void ensureSession() {
-        if (sessionId == null || sessionId.isEmpty()) {
-            throw new IllegalStateException("WDA session not created. Call createSession() first.");
-        }
-    }
-
     /**
      * 从多元素中找最合适的元素
      */
@@ -249,7 +246,6 @@ public class IosAutomation implements Automation {
                 }
             }
         }
-        // todo: 从多元素中找最合适的元素
         throw new RuntimeException("Element not found: " + res);
     }
 
@@ -257,7 +253,6 @@ public class IosAutomation implements Automation {
      * 检查元素属性
      */
     private Object getElementAttribute(String attr, String elementId) {
-        ensureSession();
         String res = HttpUtil.sendGet(WDA_URL + "/session/" + sessionId + "/element/" + elementId + "/attribute/" + attr);
         JsonObject json = JsonParser.parseString(res).getAsJsonObject();
         return json.get("value");
@@ -267,7 +262,6 @@ public class IosAutomation implements Automation {
      * 获取元素坐标
      */
     private UiElement getElementRect(String elementId) {
-        ensureSession();
         String res = HttpUtil.sendGet(WDA_URL + "/session/" + sessionId + "/element/" + elementId + "/rect");
         JsonObject json = JsonParser.parseString(res).getAsJsonObject();
         return new UiElement(json.getAsJsonObject("value").get("x").getAsInt(),
@@ -277,7 +271,6 @@ public class IosAutomation implements Automation {
     }
 
     private void pressButton(String buttonName) {
-        ensureSession();
 //        const _map = {
 //                "HOME": "home",
 //                "VOLUME_UP": "volumeup",
@@ -290,7 +283,6 @@ public class IosAutomation implements Automation {
      * 获取文本
      */
     private String getText(String elementId) {
-        ensureSession();
         String res = HttpUtil.sendGet(WDA_URL + "/session/" + sessionId + "/element/" + elementId + "/text");
         JsonObject json = JsonParser.parseString(res).getAsJsonObject();
         return json.get("value").getAsString();
@@ -300,7 +292,6 @@ public class IosAutomation implements Automation {
      * 点击坐标
      */
     private String tap(int x, int y) {
-        ensureSession();
         String body = String.format("{\"x\":%d,\"y\":%d}", x, y);
         return HttpUtil.sendPost(WDA_URL + "/session/" + sessionId + "/wda/tap", body);
     }
@@ -309,7 +300,6 @@ public class IosAutomation implements Automation {
      * 滑动
      */
     private void swipe(int startX, int startY, int endX, int endY, float seconds) {
-        ensureSession();
         String body = String.format("{\"fromX\":%d,\"fromY\":%d,\"toX\":%d,\"toY\":%d,\"duration\":%s}",
                 startX, startY, endX, endY, seconds);
         HttpUtil.sendPost(WDA_URL + "/session/" + sessionId + "/wda/dragfromtoforduration", body);

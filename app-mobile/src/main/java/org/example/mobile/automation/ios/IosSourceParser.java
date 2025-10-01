@@ -39,7 +39,6 @@ public class IosSourceParser implements UIElementParser {
             org.w3c.dom.Element rootNode = doc.getDocumentElement();
 
             return buildTree(rootNode, null);
-
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse WDA source XML", e);
         }
@@ -80,14 +79,18 @@ public class IosSourceParser implements UIElementParser {
     }
 
     public static void main(String[] args) throws Exception {
-        String path = ResourceReader.class.getClassLoader().getResource("data.txt").toURI().getPath();
+//        String path = ResourceReader.class.getClassLoader().getResource("data.txt").toURI().getPath();
 
 //        String xml = new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
 
         Automation automation = new IosAutomation();
-        automation.connect("F0F99D79-FCB0-45C3-AD55-89CCCA9BDBFD");
+        automation.connect("00008101-001434203E89003A");
 
-        automation.launch("ca.snappay.snaplii.test");
+//        automation.launch("com.apple.AppStore");
+
+//        automation.input("AppStore.searchField", "uber");
+
+        automation.click("AppStore.offerButton[state=get]");
 
         String xml = automation.source();
         //        String xml = getXmlWithoutExceedingElements(automation, 5);

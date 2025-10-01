@@ -2,7 +2,6 @@ package org.example.mobile.automation;
 
 import org.example.mobile.dto.Device;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -12,8 +11,14 @@ public interface Automation {
 
     List<Device> listDevices();
 
+    /**
+     * 指定设备
+     */
     boolean connect(String deviceId);
 
+    /**
+     * ios必须调用重建session，android可以不调用
+     */
     boolean launch(String bundleId);
 
     String source();

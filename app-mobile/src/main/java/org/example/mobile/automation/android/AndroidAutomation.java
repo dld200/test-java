@@ -154,7 +154,7 @@ public class AndroidAutomation implements Automation {
         return ShellUtil.exec(String.format("adb -s %s shell am force-stop %s", deviceId, bundleId));
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args)  {
         String deviceId = "53F5T19905000341";
         Automation robot = new AndroidAutomation();
 
